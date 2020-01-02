@@ -26,6 +26,16 @@ void PassivePacketSinkBase::handleMessage(cMessage *message)
     pushPacket(packet, packet->getArrivalGate());
 }
 
+void PassivePacketSinkBase::pushPacketStart(Packet *packet, cGate *gate)
+{
+    pushPacketProgress(packet, b(0), b(0), gate);
+}
+
+void PassivePacketSinkBase::pushPacketEnd(Packet *packet, cGate *gate)
+{
+    pushPacketProgress(packet, packet->getTotalLength(), b(0), gate);
+}
+
 } // namespace queueing
 } // namespace inet
 

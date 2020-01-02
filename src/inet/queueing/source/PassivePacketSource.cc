@@ -80,6 +80,7 @@ Packet *PassivePacketSource::popPacket(cGate *gate)
         animateSend(packet, outputGate);
         emit(packetPoppedSignal, packet);
         scheduleProvidingTimer();
+        updateDisplayString();
         return packet;
     }
 }

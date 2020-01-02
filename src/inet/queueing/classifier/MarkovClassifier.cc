@@ -113,10 +113,11 @@ Packet *MarkovClassifier::popPacket(cGate *gate)
     if (gate->getIndex() != state)
         throw cRuntimeError("Cannot pop from gate");
     auto packet = provider->popPacket(inputGate->getPathEndGate());
+    take(packet);
+    animateSend(packet, gate);
     numProcessedPackets++;
     processedTotalLength += packet->getDataLength();
     updateDisplayString();
-    animateSend(packet, gate);
     return packet;
 }
 

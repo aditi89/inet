@@ -52,6 +52,7 @@ bool PacketClassifierBase::canPushSomePacket(cGate *gate) const
 void PacketClassifierBase::pushPacket(Packet *packet, cGate *gate)
 {
     Enter_Method("pushPacket");
+    take(packet);
     emit(packetPushedSignal, packet);
     EV_INFO << "Classifying packet " << packet->getName() << ".\n";
     int index = classifyPacket(packet);
@@ -63,11 +64,67 @@ void PacketClassifierBase::pushPacket(Packet *packet, cGate *gate)
     updateDisplayString();
 }
 
+void PacketClassifierBase::pushPacketStart(Packet *packet, cGate *gate)
+{
+    Enter_Method("pushPacketStart");
+    take(packet);
+    emit(packetPushedSignal, packet);
+    EV_INFO << "Classifying packet " << packet->getName() << ".\n";
+    int index = classifyPacket(packet);
+    if (index < 0 || static_cast<unsigned int>(index) >= outputGates.size())
+        throw cRuntimeError("Classified packet to invalid output gate: %d", index);
+    processedTotalLength += packet->getDataLength();
+    pushOrSendPacketStart(packet, outputGates[index]->getPathEndGate(), consumers[index]);
+    numProcessedPackets++;
+    updateDisplayString();
+}
+
+void PacketClassifierBase::pushPacketProgress(Packet *packet, b position, b extraProcessableLength, cGate *gate)
+{
+    Enter_Method("pushPacketProgress");
+    take(packet);
+    emit(packetPushedSignal, packet);
+    EV_INFO << "Classifying packet " << packet->getName() << ".\n";
+    int index = classifyPacket(packet);
+    if (index < 0 || static_cast<unsigned int>(index) >= outputGates.size())
+        throw cRuntimeError("Classified packet to invalid output gate: %d", index);
+    processedTotalLength += packet->getDataLength();
+    pushOrSendPacketProgress(packet, position, extraProcessableLength, outputGates[index]->getPathEndGate(), consumers[index]);
+    numProcessedPackets++;
+    updateDisplayString();
+}
+
+void PacketClassifierBase::pushPacketEnd(Packet *packet, cGate *gate)
+{
+    Enter_Method("pushPacketEnd");
+    take(packet);
+    emit(packetPushedSignal, packet);
+    EV_INFO << "Classifying packet " << packet->getName() << ".\n";
+    int index = classifyPacket(packet);
+    if (index < 0 || static_cast<unsigned int>(index) >= outputGates.size())
+        throw cRuntimeError("Classified packet to invalid output gate: %d", index);
+    processedTotalLength += packet->getDataLength();
+    pushOrSendPacketEnd(packet, outputGates[index]->getPathEndGate(), consumers[index]);
+    numProcessedPackets++;
+    updateDisplayString();
+}
+
+b PacketClassifierBase::getPushedPacketConfirmedLength(Packet *packet, cGate *gate)
+{
+    int index = classifyPacket(packet);
+    return consumers[index]->getPushedPacketConfirmedLength(packet, outputGates[index]->getPathEndGate());
+}
+
 void PacketClassifierBase::handleCanPushPacket(cGate *gate)
 {
     Enter_Method("handleCanPushPacket");
     if (producer != nullptr)
         producer->handleCanPushPacket(inputGate);
+}
+
+void PacketClassifierBase::handlePushPacketConfirmation(Packet *packet, cGate *gate, bool successful)
+{
+    producer->handlePushPacketConfirmation(packet, inputGate->getPathStartGate(), successful);
 }
 
 } // namespace queueing

@@ -25,7 +25,9 @@ void PacketQueueingElementBase::animateSend(Packet *packet, cGate *gate)
 {
     auto envir = getEnvir();
     if (envir->isGUI()) {
+        auto endGate = gate->getPathEndGate();
         packet->setSentFrom(gate->getOwnerModule(), gate->getId(), simTime());
+        packet->setArrival(endGate->getOwnerModule()->getId(), endGate->getId(), simTime());
         if (gate->getNextGate() != nullptr) {
             envir->beginSend(packet);
             while (gate->getNextGate() != nullptr) {
@@ -97,10 +99,38 @@ void PacketQueueingElementBase::pushOrSendPacket(Packet *packet, cGate *gate, IP
         animateSend(packet, gate);
         consumer->pushPacket(packet, gate->getPathEndGate());
     }
-    else {
-        take(packet);
+    else
         send(packet, gate);
+}
+
+void PacketQueueingElementBase::pushOrSendPacketStart(Packet *packet, cGate *gate, IPassivePacketSink *consumer)
+{
+    if (consumer != nullptr) {
+        animateSend(packet, gate);
+        consumer->pushPacketStart(packet, gate->getPathEndGate());
     }
+    else
+        sendPacketStart(packet, gate, 0);
+}
+
+void PacketQueueingElementBase::pushOrSendPacketEnd(Packet *packet, cGate *gate, IPassivePacketSink *consumer)
+{
+    if (consumer != nullptr) {
+        animateSend(packet, gate);
+        consumer->pushPacketEnd(packet, gate->getPathEndGate());
+    }
+    else
+        sendPacketEnd(packet, gate, 0);
+}
+
+void PacketQueueingElementBase::pushOrSendPacketProgress(Packet *packet, b position, b extraProcessableLength, cGate *gate, IPassivePacketSink *consumer)
+{
+    if (consumer != nullptr) {
+        animateSend(packet, gate);
+        consumer->pushPacketProgress(packet, position, extraProcessableLength, gate->getPathEndGate());
+    }
+    else
+        sendPacketProgress(packet, gate, 0, b(position).get(), 0, b(extraProcessableLength).get(), 0);
 }
 
 void PacketQueueingElementBase::dropPacket(Packet *packet, PacketDropReason reason, int limit)

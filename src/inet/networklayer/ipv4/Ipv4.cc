@@ -1009,6 +1009,7 @@ void Ipv4::encapsulate(Packet *transportPacket)
     }
     if (DscpReq *dscpReq = transportPacket->removeTagIfPresent<DscpReq>()) {
         ipv4Header->setDscp(dscpReq->getDifferentiatedServicesCodePoint());
+        transportPacket->addTag<DscpInd>()->setDifferentiatedServicesCodePoint(dscpReq->getDifferentiatedServicesCodePoint());
         delete dscpReq;
     }
     if (EcnReq *ecnReq = transportPacket->removeTagIfPresent<EcnReq>()) {

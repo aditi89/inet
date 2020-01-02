@@ -25,6 +25,7 @@ namespace queueing {
 
 /**
  * This class defines the interface for active packet sources.
+ * See the corresponding NED file for more details.
  */
 class INET_API IActivePacketSource
 {
@@ -39,9 +40,15 @@ class INET_API IActivePacketSource
 
     /**
      * Notifies about a state change that allows to push some packet into the
-     * passive packet sink at the given gate. The gate is never nullptr.
+     * passive packet sink at the given gate. The gate must not be nullptr.
      */
     virtual void handleCanPushPacket(cGate *gate) = 0;
+
+    /**
+     * Notifies about the completion of the packet processing for a packet that
+     * was pushed earlier. The packet and gate parameters must not be nullptr.
+     */
+    virtual void handlePushPacketConfirmation(Packet *packet, cGate *gate, bool successful) = 0;
 };
 
 } // namespace queueing

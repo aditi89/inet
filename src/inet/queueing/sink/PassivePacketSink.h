@@ -49,6 +49,8 @@ class INET_API PassivePacketSink : public PassivePacketSinkBase
     virtual bool canPushSomePacket(cGate *gate) const override { return !consumptionTimer->isScheduled(); }
     virtual bool canPushPacket(Packet *packet, cGate *gate) const override { return canPushSomePacket(gate); }
     virtual void pushPacket(Packet *packet, cGate *gate) override;
+    virtual void pushPacketProgress(Packet *packet, b position, b extraProcessableLength = b(0), cGate *gate = nullptr) override { }
+    virtual b getPushedPacketConfirmedLength(Packet *packet, cGate *gate = nullptr) override { return b(0); }
 };
 
 } // namespace queueing

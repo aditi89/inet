@@ -31,7 +31,7 @@ Register_Protocol_Dissector(&Protocol::ethernetPhy, EthernetPhyDissector);
 
 void EthernetPhyDissector::dissect(Packet *packet, const Protocol *protocol, ICallback& callback) const
 {
-    const auto& header = packet->popAtFront<EthernetPhyHeader>();
+    const auto& header = packet->popAtFront<EthernetPhyHeaderBase>();
     callback.startProtocolDataUnit(&Protocol::ethernetPhy);
     callback.visitChunk(header, &Protocol::ethernetPhy);
     callback.dissectPacket(packet, &Protocol::ethernetMac);
@@ -40,7 +40,8 @@ void EthernetPhyDissector::dissect(Packet *packet, const Protocol *protocol, ICa
 
 void EthernetMacDissector::dissect(Packet *packet, const Protocol *protocol, ICallback& callback) const
 {
-    const auto& header = packet->popAtFront<EthernetMacHeader>();
+    // TODO: KLUDGE: this line allows different representations, but it isn't entirely correct B(20) is a wild guess
+    const auto& header = packet->popAtFront<EthernetMacHeader>(B(20), Chunk::PF_ALLOW_SERIALIZATION);
     callback.startProtocolDataUnit(&Protocol::ethernetMac);
     callback.visitChunk(header, &Protocol::ethernetMac);
     const auto& fcs = packet->popAtBack<EthernetFcs>(ETHER_FCS_BYTES);

@@ -25,6 +25,7 @@ namespace queueing {
 
 /**
  * This class defines the interface for active packet sinks.
+ * See the corresponding NED file for more details.
  */
 class INET_API IActivePacketSink
 {
@@ -37,11 +38,18 @@ class INET_API IActivePacketSink
      */
     virtual IPassivePacketSource *getProvider(cGate *gate) = 0;
 
+    // TODO: rename to pull*
     /**
      * Notifies about a state change that allows to pop some packet from the
-     * passive packet source at the given gate. The gate is never nulltr.
+     * passive packet source at the given gate. The gate must not be nulltr.
      */
     virtual void handleCanPopPacket(cGate *gate) = 0;
+
+    /**
+     * Notifies about the completion of the packet processing for a packet that
+     * was pulled earlier. The packet and gate parameters must not be nullptr.
+     */
+    virtual void handlePullPacketConfirmation(Packet *packet, cGate *gate, bool successful) = 0;
 };
 
 } // namespace queueing

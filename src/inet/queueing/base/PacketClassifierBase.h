@@ -45,9 +45,16 @@ class INET_API PacketClassifierBase : public PassivePacketSinkBase, public IActi
 
     virtual bool canPushSomePacket(cGate *gate) const override;
     virtual bool canPushPacket(Packet *packet, cGate *gate) const override { return canPushSomePacket(gate); }
+
     virtual void pushPacket(Packet *packet, cGate *gate) override;
+    virtual void pushPacketStart(Packet *packet, cGate *gate = nullptr) override;
+    virtual void pushPacketProgress(Packet *packet, b position, b extraProcessableLength = b(0), cGate *gate = nullptr) override;
+    virtual void pushPacketEnd(Packet *packet, cGate *gate = nullptr) override;
+
+    virtual b getPushedPacketConfirmedLength(Packet *packet, cGate *gate = nullptr) override;
 
     virtual void handleCanPushPacket(cGate *gate) override;
+    virtual void handlePushPacketConfirmation(Packet *packet, cGate *gate, bool successful) override;
 };
 
 } // namespace queueing

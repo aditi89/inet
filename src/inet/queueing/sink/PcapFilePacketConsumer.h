@@ -42,6 +42,7 @@ class INET_API PcapFilePacketConsumer : public PassivePacketSinkBase
     virtual bool supportsPopPacket(cGate *gate) const override { return false; }
 
     virtual void pushPacket(Packet *packet, cGate *gate) override;
+    virtual void pushPacketProgress(Packet *packet, b position, b extraProcessableLength = b(0), cGate *gate = nullptr) override { }
 };
 
 } // namespace queueing

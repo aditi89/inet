@@ -130,8 +130,8 @@ Packet *PacketQueue::popPacket(cGate *gate)
     else
         queue.pop();
     emit(packetPoppedSignal, packet);
-    updateDisplayString();
     animateSend(packet, outputGate);
+    updateDisplayString();
     return packet;
 }
 

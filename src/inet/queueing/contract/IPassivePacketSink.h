@@ -25,9 +25,17 @@ namespace queueing {
 
 /**
  * This class defines the interface for passive packet sinks.
+ * See the corresponding NED file for more details.
  */
 class INET_API IPassivePacketSink
 {
+  public:
+    enum CanPushSomePacketResult {
+        PUSH_NONE = 0,
+        PUSH_SOME = 1,
+        PUSH_ANY  = 2,
+    };
+
   public:
     virtual ~IPassivePacketSink() {}
 
@@ -36,6 +44,7 @@ class INET_API IPassivePacketSink
      * packets can be pushed into it without raising an error. The gate must
      * support pushing packets.
      */
+    // TODO: change name and result to: ANY, SOME, NONE
     virtual bool canPushSomePacket(cGate *gate = nullptr) const = 0;
 
     /**
@@ -46,11 +55,40 @@ class INET_API IPassivePacketSink
     virtual bool canPushPacket(Packet *packet, cGate *gate = nullptr) const = 0;
 
     /**
-     * Pushes a packet into the packet sink at the given gate. The consumer must
-     * not be full at the gate. The packet must not be nullptr and the gate
-     * must support pushing packets.
+     * Pushes the packet into the packet sink at the given gate. This operation
+     * pushes the packet all at once. The sink must not be full at the gate.
+     * The packet must not be nullptr and the gate must support pushing packets.
      */
     virtual void pushPacket(Packet *packet, cGate *gate = nullptr) = 0;
+
+    /**
+     * Starts pushing the packet into the packet sink at the given gate. This is
+     * a streaming operation. The sink must not be full at the gate. The packet
+     * must not be nullptr and the gate must support pushing packets.
+     */
+    virtual void pushPacketStart(Packet *packet, cGate *gate = nullptr) = 0;
+
+    /**
+     * Ends pushing the packet into the packet sink at the given gate. This is
+     * a streaming operation. The sink must not be full at the gate. The packet
+     * must not be nullptr and the gate must support pushing packets.
+     */
+    virtual void pushPacketEnd(Packet *packet, cGate *gate = nullptr) = 0;
+
+    /**
+     * Progresses pushing the packet into the packet sink at the given gate. This
+     * is a streaming operation. The position specifies where the streaming is at
+     * the moment. The extra length partially fixes the future of the streaming
+     * operation. The sink must not be full at the gate. The packet must not be
+     * nullptr and the gate must support pushing packets.
+     */
+    virtual void pushPacketProgress(Packet *packet, b position, b extraProcessableLength = b(0), cGate *gate = nullptr) = 0;
+
+    /**
+     * Returns the confirmed length of a currently streaming packet. The packet
+     * must not be nullptr and the gate must support pushing packets.
+     */
+    virtual b getPushedPacketConfirmedLength(Packet *packet, cGate *gate = nullptr) = 0;
 };
 
 } // namespace queueing

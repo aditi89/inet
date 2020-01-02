@@ -40,6 +40,7 @@ class INET_API EmptyPacketSource : public PacketQueueingElementBase, public IAct
     virtual bool supportsPopPacket(cGate *gate) const override { return false; }
 
     virtual void handleCanPushPacket(cGate *gate) override { }
+    virtual void handlePushPacketConfirmation(Packet *packet, cGate *gate, bool successful) override { }
 };
 
 } // namespace queueing

@@ -54,7 +54,7 @@ const char *PacketPrinter::DirectiveResolver::resolveDirective(char directive) c
 
 int PacketPrinter::getScoreFor(cMessage *msg) const
 {
-    return msg->isPacket() ? 100 : 0;
+    return msg->isPacket() || dynamic_cast<cProgress *>(msg) ? 100 : 0;
 }
 
 bool PacketPrinter::isEnabledOption(const Options *options, const char *name) const
@@ -150,10 +150,12 @@ void PacketPrinter::printMessage(std::ostream& stream, cMessage *message) const
 void PacketPrinter::printMessage(std::ostream& stream, cMessage *message, const Options *options) const
 {
     Context context;
+    if (auto progress = dynamic_cast<cProgress *>(message))
+        message = progress->getPacket();
     for (auto cpacket = dynamic_cast<cPacket *>(message); cpacket != nullptr; cpacket = cpacket->getEncapsulatedPacket()) {
         if (false) {}
 #ifdef WITH_RADIO
-        else if (auto signal = dynamic_cast<inet::physicallayer::WirelessSignal *>(cpacket))
+        else if (auto signal = dynamic_cast<physicallayer::Signal *>(cpacket))
             printSignal(signal, options, context);
 #endif // WITH_RADIO
         else if (auto packet = dynamic_cast<Packet *>(cpacket))
@@ -165,21 +167,21 @@ void PacketPrinter::printMessage(std::ostream& stream, cMessage *message, const 
 }
 
 #ifdef WITH_RADIO
-void PacketPrinter::printSignal(std::ostream& stream, inet::physicallayer::WirelessSignal *signal) const
+void PacketPrinter::printSignal(std::ostream& stream, physicallayer::Signal *signal) const
 {
     Options options;
     options.enabledTags = getDefaultEnabledTags();
     printSignal(stream, signal, &options);
 }
 
-void PacketPrinter::printSignal(std::ostream& stream, inet::physicallayer::WirelessSignal *signal, const Options *options) const
+void PacketPrinter::printSignal(std::ostream& stream, physicallayer::Signal *signal, const Options *options) const
 {
     Context context;
     printSignal(signal, options, context);
     printContext(stream, options, context);
 }
 
-void PacketPrinter::printSignal(inet::physicallayer::WirelessSignal *signal, const Options *options, Context& context) const
+void PacketPrinter::printSignal(physicallayer::Signal *signal, const Options *options, Context& context) const
 {
     context.infoColumn << signal->str();
 }
@@ -211,13 +213,21 @@ void PacketPrinter::printPacket(Packet *packet, const Options *options, Context&
     PacketDissector::PduTreeBuilder pduTreeBuilder;
     auto packetProtocolTag = packet->findTag<PacketProtocolTag>();
     auto protocol = packetProtocolTag != nullptr ? packetProtocolTag->getProtocol() : nullptr;
-    PacketDissector packetDissector(ProtocolDissectorRegistry::globalRegistry, pduTreeBuilder);
-    packetDissector.dissectPacket(packet, protocol);
-    auto& protocolDataUnit = pduTreeBuilder.getTopLevelPdu();
-    if (pduTreeBuilder.isSimplyEncapsulatedPacket() && isEnabledOption(options, "Print inside out"))
-        const_cast<PacketPrinter *>(this)->printPacketInsideOut(protocolDataUnit, options, context);
-    else
-        const_cast<PacketPrinter *>(this)->printPacketLeftToRight(protocolDataUnit, options, context);
+    try {
+        PacketDissector packetDissector(ProtocolDissectorRegistry::globalRegistry, pduTreeBuilder);
+        packetDissector.dissectPacket(packet, protocol);
+    }
+    catch (cRuntimeError& e) {
+        // NOTE: don't propagate errors from printPacket
+        context.infoColumn << e.what() << ": ";
+    }
+    const auto& protocolDataUnit = pduTreeBuilder.getTopLevelPdu();
+    if (protocolDataUnit != nullptr) {
+        if (pduTreeBuilder.isSimplyEncapsulatedPacket() && isEnabledOption(options, "Print inside out"))
+            const_cast<PacketPrinter *>(this)->printPacketInsideOut(protocolDataUnit, options, context);
+        else
+            const_cast<PacketPrinter *>(this)->printPacketLeftToRight(protocolDataUnit, options, context);
+    }
 }
 
 std::string PacketPrinter::printPacketToString(Packet *packet, const char *format) const

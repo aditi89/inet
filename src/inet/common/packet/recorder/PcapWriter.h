@@ -25,10 +25,6 @@
 
 namespace inet {
 
-// Foreign declarations:
-class Ipv4Header;
-class Ipv6Header;
-
 /**
  * Dumps packets into a PCAP file; see the "pcap-savefile" man page or
  * http://www.tcpdump.org/ for details on the file format.

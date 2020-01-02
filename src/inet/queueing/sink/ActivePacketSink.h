@@ -49,6 +49,7 @@ class INET_API ActivePacketSink : public PacketSinkBase, public IActivePacketSin
     virtual bool supportsPopPacket(cGate *gate) const override { return inputGate == gate; }
 
     virtual void handleCanPopPacket(cGate *gate) override;
+    virtual void handlePullPacketConfirmation(Packet *packet, cGate *gate, bool successful) override { }
 };
 
 } // namespace queueing

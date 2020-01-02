@@ -18,13 +18,14 @@
 #ifndef __INET_PACKETMULTIPLEXER_H
 #define __INET_PACKETMULTIPLEXER_H
 
+#include "inet/common/IProtocolRegistrationListener.h"
 #include "inet/queueing/base/PassivePacketSinkBase.h"
 #include "inet/queueing/contract/IActivePacketSource.h"
 
 namespace inet {
 namespace queueing {
 
-class INET_API PacketMultiplexer : public PassivePacketSinkBase, public IActivePacketSource
+class INET_API PacketMultiplexer : public PassivePacketSinkBase, public IActivePacketSource, public IProtocolRegistrationListener
 {
   protected:
     std::vector<cGate *> inputGates;
@@ -45,8 +46,16 @@ class INET_API PacketMultiplexer : public PassivePacketSinkBase, public IActiveP
     virtual bool canPushSomePacket(cGate *gate) const override { return consumer->canPushSomePacket(outputGate); }
     virtual bool canPushPacket(Packet *packet, cGate *gate) const override { return consumer->canPushPacket(packet, gate); }
     virtual void pushPacket(Packet *packet, cGate *gate) override;
+    virtual void pushPacketStart(Packet *packet, cGate *gate = nullptr) override;
+    virtual void pushPacketProgress(Packet *packet, b position, b extraProcessableLength = b(0), cGate *gate = nullptr) override;
+    virtual void pushPacketEnd(Packet *packet, cGate *gate = nullptr) override;
+    virtual b getPushedPacketConfirmedLength(Packet *packet, cGate *gate = nullptr) override;
 
     virtual void handleCanPushPacket(cGate *gate) override;
+    virtual void handlePushPacketConfirmation(Packet *packet, cGate *gate, bool successful) override { }
+
+    virtual void handleRegisterService(const Protocol& protocol, cGate *out, ServicePrimitive servicePrimitive) override;
+    virtual void handleRegisterProtocol(const Protocol& protocol, cGate *in, ServicePrimitive servicePrimitive) override;
 };
 
 } // namespace queueing

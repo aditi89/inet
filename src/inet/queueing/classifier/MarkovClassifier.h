@@ -57,10 +57,14 @@ class INET_API MarkovClassifier : public PacketClassifierBase, public IActivePac
     virtual bool canPopSomePacket(cGate *gate) const override;
     virtual Packet *canPopPacket(cGate *gate) const override;
     virtual Packet *popPacket(cGate *gate) override;
+    virtual Packet *pullPacketStart(cGate *gate = nullptr) override { return nullptr; }
+    virtual Packet *pullPacketEnd(cGate *gate = nullptr) override { return nullptr; }
+    virtual Packet *pullPacketProgress(b& position, b& extraProcessableLength, cGate *gate = nullptr) override { return nullptr; }
+    virtual b getPulledPacketConfirmedLength(Packet *packet, cGate *gate = nullptr) override { return b(0); }
 
     virtual void handleCanPopPacket(cGate *gate) override;
+    virtual void handlePullPacketConfirmation(Packet *packet, cGate *gate, bool successful) override { }
     virtual const char *resolveDirective(char directive) const override;
-
 };
 
 } // namespace queueing

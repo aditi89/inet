@@ -36,7 +36,7 @@ void PacketSchedulerBase::initialize(int stage)
         }
     }
     else if (stage == INITSTAGE_QUEUEING) {
-        for (int i = 0; i < gateSize("in"); i++)
+        for (int i = 0; i < (int)inputGates.size(); i++)
             checkPopPacketSupport(inputGates[i]);
         checkPopPacketSupport(outputGate);
     }
@@ -44,12 +44,23 @@ void PacketSchedulerBase::initialize(int stage)
 
 bool PacketSchedulerBase::canPopSomePacket(cGate *gate) const
 {
-    for (int i = 0; i < gateSize("in"); i++) {
+    for (int i = 0; i < (int)inputGates.size(); i++) {
         auto inputProvider = providers[i];
         if (inputProvider->canPopSomePacket(inputGates[i]->getPathStartGate()))
             return true;
     }
     return false;
+}
+
+Packet *PacketSchedulerBase::canPopPacket(cGate *gate) const
+{
+    for (int i = 0; i < (int)inputGates.size(); i++) {
+        auto inputProvider = providers[i];
+        auto packet = inputProvider->canPopPacket(inputGates[i]->getPathStartGate());
+        if (packet != nullptr)
+            return packet;
+    }
+    return nullptr;
 }
 
 Packet *PacketSchedulerBase::popPacket(cGate *gate)
@@ -59,11 +70,12 @@ Packet *PacketSchedulerBase::popPacket(cGate *gate)
     if (index < 0 || static_cast<unsigned int>(index) >= inputGates.size())
         throw cRuntimeError("Scheduled packet from invalid input gate: %d", index);
     auto packet = providers[index]->popPacket(inputGates[index]->getPathStartGate());
+    take(packet);
     EV_INFO << "Scheduling packet " << packet->getName() << ".\n";
+    animateSend(packet, outputGate);
     numProcessedPackets++;
     processedTotalLength += packet->getDataLength();
     updateDisplayString();
-    animateSend(packet, outputGate);
     emit(packetPoppedSignal, packet);
     return packet;
 }

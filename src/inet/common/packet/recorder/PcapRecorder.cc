@@ -38,7 +38,7 @@ PcapRecorder::~PcapRecorder()
         delete helper;
 }
 
-PcapRecorder::PcapRecorder() : cSimpleModule(), pcapWriter()
+PcapRecorder::PcapRecorder() : cSimpleModule()
 {
 }
 
@@ -181,17 +181,17 @@ void PcapRecorder::recordPacket(const cPacket *msg, bool l2r)
                 pcapWriter.openPcap(par("pcapFile"), snaplen, pcapLinkType);
                 pcapWriter.setFlushParameter(par("alwaysFlush").boolValue());
             }
-            if (!matchesLinkType(protocol)) {
-                auto convertedPacket = tryConvertToLinkType(packet, protocol);
-                if (convertedPacket) {
-                    pcapWriter.writePacket(simTime(), convertedPacket);
-                    numRecorded++;
-                    emit(packetRecordedSignal, packet);
-                    delete convertedPacket;
-                    return;
-                }
-                throw cRuntimeError("The protocol '%s' doesn't match PCAP link type %d", protocol->getName(), pcapLinkType);
-            }
+//            if (!matchesLinkType(protocol)) {
+//                auto convertedPacket = tryConvertToLinkType(packet, protocol);
+//                if (convertedPacket) {
+//                    pcapWriter.writePacket(simTime(), convertedPacket);
+//                    numRecorded++;
+//                    emit(packetRecordedSignal, packet);
+//                    delete convertedPacket;
+//                    return;
+//                }
+//                throw cRuntimeError("The protocol '%s' doesn't match PCAP link type %d", protocol->getName(), pcapLinkType);
+//            }
             pcapWriter.writePacket(simTime(), packet);
             numRecorded++;
             emit(packetRecordedSignal, packet);

@@ -1,0 +1,56 @@
+FragmentTag
+IFragmenter
+
+FragmenterBase (fragments packets base on fragmentation policy)
+TaggingFragmenter extends FragmenterBase (produces fragments with FragmentTag based)
+
+LengthBasedFragmenterPolicy (computes fragment lengths based on minFragmentLength, maxFragmentLength, and fragmentHeaderLength)
+CountBasedFragmenterPolicy
+
+FragmentHeaderInserter (hypothetical protocol, inserts FragmentNumberHeader)
+FragmentHeaderChecker (hypothetical protocol, checks and removes FragmentNumberHeader)
+
+IDefragmenter
+DefragmenterBase (defragments packets)
+TagBasedDefragmenter extends DefragmenterBase like IDefragmenter (based on FragmentationTag)
+DefragmenterProtocol extends DefragmenterBase like IDefragmenter (based on FragmentNumberHeader)
+
+IAggregator
+AggregatorBase
+AggregatorProtocol extends AggregatorBase like IAggregator
+LengthBasedAggregatorPolicy
+
+IDeaggregator
+DeaggregatorBase
+DeaggregatorProtocol extends DeaggregatorBase like IDeagregator (AggregationTag)
+
+
+
+Resending -> Resender
+Forwarding -> Forwarder
+Reordering -> Reorderer
+SequenceNumbering -> SequenceNumberer
+Aggregation -> Aggregator
+Deaggregation -> Deaggregator
+CrcInsertion -> CrcInserter
+CrcVerification -> CrcChecker
+FcsInsertion -> FcsInserter
+FcsVerification -> FcsChecker
+PaddingInsertion -> PaddingInserter
+Defragmentation -> Defragmenter
+Fragmentation -> Fragmenter
+
+// TODO: delete EthernetDefragmentation -> EthernetDefragmenter
+AddressInsertion -> EthernetAddressInserter
+AddressChecking -> EthernetAddressChecker
+TypeOrLengthInsertion -> EthernetTypeOrLengthInserter
+TypeOrLengthChecking -> EthernetTypeOrLengthChecker
+EthernetFcsInsertion -> EthernetFcsInserter
+EthernetFcsVerification -> EthernetFcsChecker
+FragmentFcsInsertion -> EthernetFragmentFcsInserter
+FragmentFcsVerification -> EthernetFragmentFcsChecker
+FragmentPreambleInsertion -> EthernetFragmentPreambleInserter
+FragmentPreambleChecker -> EthernetFragmentPreambleChecker
+PreambleInsertion -> EthernetPreambleInserter
+PreambleChecker -> EthernetPreambleChecker
+

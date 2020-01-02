@@ -43,8 +43,11 @@ class INET_API PacketDuplicator : public PassivePacketSinkBase, public IActivePa
     virtual bool supportsPopPacket(cGate *gate) const override { return false; }
 
     virtual void pushPacket(Packet *packet, cGate *gate) override;
+    virtual void pushPacketProgress(Packet *packet, b position, b extraProcessableLength = b(0), cGate *gate = nullptr) override { }
+    virtual b getPushedPacketConfirmedLength(Packet *packet, cGate *gate = nullptr) override { return b(0); }
 
     virtual void handleCanPushPacket(cGate *gate) override;
+    virtual void handlePushPacketConfirmation(Packet *packet, cGate *gate, bool successful) override { }
 };
 
 } // namespace queueing
