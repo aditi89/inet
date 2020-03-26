@@ -60,9 +60,10 @@ void InterPacketGap::handleMessage(cMessage *message)
             pushPacket(packet, packet->getArrivalGate());
         }
         else if (auto progress = dynamic_cast<cProgress *>(message)) {
+            throw cRuntimeError("module error: obsolete code");
             auto now = simTime();
             auto packet = check_and_cast<Packet *>(progress->getPacket());
-            if (packet == lastPacket) {
+            if (packet == lastPacket) {     //FIXME
                 lastPacketEndTime = now + lastDelay + packet->getDuration() - progress->getTimePosition();
                 if (lastDelay == 0)
                     receiveProgress(progress->getPacket(), progress->getArrivalGate(), progress->getKind(), progress->getBitPosition(), progress->getTimePosition(), progress->getExtraProcessableBitLength(), progress->getExtraProcessableDuration());
