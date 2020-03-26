@@ -18,7 +18,7 @@ package inet.protocol.transceiver;
 simple StartStopReceiver
 {
     parameters:
-        double datarate @unit(bps);
+        volatile double datarate @unit(bps);
         @class(StartStopReceiver);
         @display("i=block/wrx");
     gates:

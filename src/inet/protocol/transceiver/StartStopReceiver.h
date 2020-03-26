@@ -30,8 +30,7 @@ using namespace inet::physicallayer;
 class INET_API StartStopReceiver : public PacketQueueingElementBase
 {
   protected:
-    bps datarate = bps(NaN);
-
+    cPar *dataratePar = nullptr;
     cGate *inputGate = nullptr;
     cGate *outputGate = nullptr;
     IPassivePacketSink *consumer = nullptr;

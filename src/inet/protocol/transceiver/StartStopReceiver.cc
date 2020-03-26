@@ -23,7 +23,7 @@ Define_Module(StartStopReceiver);
 void StartStopReceiver::initialize(int stage)
 {
     if (stage == INITSTAGE_LOCAL) {
-        datarate = bps(par("datarate"));
+        dataratePar = &par("datarate");
         inputGate = gate("in");
         outputGate = gate("out");
         consumer = findConnectedModule<IPassivePacketSink>(outputGate);
