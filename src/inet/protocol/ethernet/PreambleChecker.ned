@@ -17,9 +17,10 @@
 
 package inet.protocol.ethernet;
 
-import inet.queueing.base.PacketFlowBase;
+import inet.queueing.base.PacketFilterBase;
 
-simple PreambleChecker extends PacketFlowBase
+
+simple PreambleChecker extends PacketFilterBase
 {
     parameters:
         @class(PreambleChecker);
