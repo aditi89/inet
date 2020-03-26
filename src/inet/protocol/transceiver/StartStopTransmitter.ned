@@ -22,7 +22,7 @@ import inet.queueing.base.PacketSinkBase;
 simple StartStopTransmitter extends PacketSinkBase
 {
     parameters:
-        double datarate @unit(bps);
+        volatile double datarate @unit(bps);
         @class(StartStopTransmitter);
         @display("i=block/wtx");
     gates:

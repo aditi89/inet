@@ -31,7 +31,7 @@ void StartStopTransmitter::initialize(int stage)
         inputGate = gate("in");
         outputGate = gate("out");
         producer = findConnectedModule<IActivePacketSource>(inputGate);
-        datarate = bps(par("datarate"));
+        dataratePar = &par("datarate");
         txEndTimer = new cMessage("endTimer");
     }
 }
@@ -50,23 +50,26 @@ void StartStopTransmitter::handleMessage(cMessage *message)
 void StartStopTransmitter::pushPacket(Packet *packet, cGate *gate)
 {
     Enter_Method("pushPacket");
+
+    ASSERT(signal == nullptr);
     txPacket = packet;
     take(txPacket);
     txPacket->clearTags();
     // TODO: new Signal
     auto s = new EthernetSignal(packet->getName());
+    auto datarate = bps(*dataratePar);
     s->setBitrate(datarate.get());
     signal = s;
-    auto duration = calculateDuration(txPacket);
+    auto duration = calculateDuration(txPacket, datarate);
     signal->setDuration(duration);
     signal->encapsulate(txPacket);
     sendPacketStart(signal->dup(), outputGate, duration);
     scheduleTxEndTimer(signal);
 }
 
-simtime_t StartStopTransmitter::calculateDuration(Packet *packet)
+simtime_t StartStopTransmitter::calculateDuration(Packet *packet, bps datarate) const
 {
-    return packet->getTotalLength().get() / datarate.get();
+    return packet->getDataLength().get() / datarate.get();
 }
 
 void StartStopTransmitter::scheduleTxEndTimer(Signal *signal)
