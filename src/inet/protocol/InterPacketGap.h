@@ -28,8 +28,7 @@ using namespace inet::queueing;
 class INET_API InterPacketGap : public PassivePacketSinkBase, public IActivePacketSource
 {
   protected:
-    simtime_t duration;
-
+    cPar *durationPar = nullptr;
     cGate *inputGate = nullptr;
     IActivePacketSource *producer = nullptr;
 
@@ -43,6 +42,7 @@ class INET_API InterPacketGap : public PassivePacketSinkBase, public IActivePack
   protected:
     virtual void initialize(int stage) override;
     virtual void handleMessage(cMessage *message) override;
+    virtual void refreshDisplay() const override;
 
     virtual void receivePacketStart(cPacket *packet) override;
     virtual void receivePacketProgress(cPacket *packet, int bitPosition, simtime_t timePosition, int extraProcessableBitLength, simtime_t extraProcessableDuration) override;

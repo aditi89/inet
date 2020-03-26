@@ -22,7 +22,7 @@ import inet.queueing.base.PacketProcessorBase;
 simple InterPacketGap extends PacketProcessorBase
 {
     parameters:
-        double duration @unit(s);
+        volatile double duration @unit(s);
         @display("i=block/timer");
         @class(InterPacketGap);
     gates:

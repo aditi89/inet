@@ -26,11 +26,11 @@ void InterPacketGap::initialize(int stage)
 {
     PassivePacketSinkBase::initialize(stage);
     if (stage == INITSTAGE_LOCAL) {
-        duration = par("duration");
         inputGate = gate("in");
         producer = findConnectedModule<IActivePacketSource>(inputGate);
         outputGate = gate("out");
         consumer = findConnectedModule<IPassivePacketSink>(outputGate);
+        durationPar = &par("duration");
     }
 }
 
@@ -71,6 +71,7 @@ void InterPacketGap::handleMessage(cMessage *message)
             }
             else {
                 lastPacket = packet;
+                simtime_t duration = par("duration");
                 lastDelay = lastPacketEndTime + duration - simTime() + progress->getTimePosition();
                 if (lastDelay < 0)
                     lastDelay = 0;
@@ -126,6 +127,7 @@ void InterPacketGap::pushPacket(Packet *packet, cGate *gate)
     packet->setArrival(getId(), inputGate->getId(), simTime());
     auto now = simTime();
     lastPacket = packet;
+    simtime_t duration = par("duration");
     lastDelay = lastPacketEndTime + duration - now;
     if (lastDelay < 0)
         lastDelay = 0;
@@ -152,6 +154,7 @@ void InterPacketGap::pushPacketStart(Packet *packet, cGate *gate)
     Enter_Method("pushPacketStart");
     auto now = simTime();
     lastPacket = packet;
+    simtime_t duration = par("duration");
     lastDelay = lastPacketEndTime + duration - now;
     if (lastDelay < 0)
         lastDelay = 0;
@@ -182,6 +185,15 @@ b InterPacketGap::getPushedPacketConfirmedLength(Packet *packet, cGate *gate)
 void InterPacketGap::handlePushPacketConfirmation(Packet *packet, cGate *gate, bool successful)
 {
     lastPacketEndTime = simTime();
+}
+
+void InterPacketGap::refreshDisplay() const
+{
+    PassivePacketSinkBase::refreshDisplay();
+
+    char buf[40];
+    sprintf(buf, "ifg: %f ns", par("duration").doubleValue()*1e9);
+    getDisplayString().setTagArg("t", 0, buf);
 }
 
 } // namespace inet
