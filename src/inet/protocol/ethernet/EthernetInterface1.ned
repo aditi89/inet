@@ -73,11 +73,11 @@ module EthernetInterface1 extends InterfaceEntry like IEthernetInterface
             parameters:
                 @display("p=150,700");
         }
-        ifg: InterPacketGap {
+        serializer: PacketSerializer {
             parameters:
                 @display("p=150,800");
         }
-        serializer: PacketSerializer {
+        ifg: InterPacketGap {
             parameters:
                 @display("p=150,900");
         }
@@ -113,9 +113,9 @@ module EthernetInterface1 extends InterfaceEntry like IEthernetInterface
         addressInsertion.out --> padding.in;
         padding.out --> fcsInsertion.in;
         fcsInsertion.out --> preambleInsertion.in;
-        preambleInsertion.out --> ifg.in;
-        ifg.out --> serializer.in;
-        serializer.out --> transmitter.in;
+        preambleInsertion.out --> serializer.in;
+        serializer.out --> ifg.in;
+        ifg.out --> transmitter.in;
         transmitter.out --> phys$o;
         phys$i --> receiver.in;
         receiver.out --> preambleChecker.in;
