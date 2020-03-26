@@ -59,7 +59,7 @@ void Transmitter::pushPacket(Packet *packet, cGate *gate)
 
 simtime_t Transmitter::calculateDuration(Packet *packet)
 {
-    return packet->getTotalLength().get() / datarate.get();
+    return packet->getDataLength().get() / datarate.get();
 }
 
 void Transmitter::scheduleTxEndTimer(Signal *signal)
