@@ -33,13 +33,22 @@ import inet.queueing.server.InstantServer;
 module EthernetInterface1 extends InterfaceEntry like IEthernetInterface
 {
     parameters:
+        string interfaceTableModule;
+        string address = default("auto");
         bool broadcast = default(true);
         bool multicast = default(true);
-        string address = default("auto");
+        bool promiscuous = default(false);  // if true, all packets are received, otherwise only the
+                                            // ones with matching destination MAC address
         double bitrate @unit(bps);
-        string interfaceTableModule;
+        int mtu @unit(B) = default(1500B);
+        string fcsMode @enum("declared","computed") = default("declared");
         @class(InterfaceEntry);
         @display("i=block/ifcard");
+        padding.minLength = 60B;
+        ifg.duration = 96s/dropUnit(bitrate);
+        transmitter.datarate = bitrate;
+        receiver.datarate = bitrate;
+        addressChecking.promiscuous = promiscuous;
     gates:
         input upperLayerIn;
         output upperLayerOut;
