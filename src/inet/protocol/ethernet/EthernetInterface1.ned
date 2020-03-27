@@ -22,13 +22,10 @@ import inet.networklayer.common.InterfaceEntry;
 import inet.protocol.InterPacketGap;
 import inet.protocol.PacketSerializer;
 import inet.protocol.Padding;
-import inet.protocol.checksum.FcsInsertion;
-import inet.protocol.checksum.FcsVerification;
 import inet.protocol.transceiver.StartStopReceiver;
 import inet.protocol.transceiver.StartStopTransmitter;
 import inet.queueing.queue.PacketQueue;
 import inet.queueing.server.InstantServer;
-
 
 module EthernetInterface1 extends InterfaceEntry like IEthernetInterface
 {
@@ -74,7 +71,7 @@ module EthernetInterface1 extends InterfaceEntry like IEthernetInterface
             parameters:
                 @display("p=150,500");
         }
-        fcsInsertion: FcsInsertion {
+        fcsInsertion: EthernetFcsInsertion {
             parameters:
                 @display("p=150,600");
         }
@@ -102,7 +99,7 @@ module EthernetInterface1 extends InterfaceEntry like IEthernetInterface
             parameters:
                 @display("p=450,200");
         }
-        fcsVerification: FcsVerification {
+        fcsVerification: EthernetFcsVerification {
             parameters:
                 @display("p=450,600");
         }

@@ -63,6 +63,48 @@ void PacketClassifierBase::pushPacket(Packet *packet, cGate *gate)
     updateDisplayString();
 }
 
+void PacketClassifierBase::pushPacketStart(Packet *packet, cGate *gate)
+{
+    Enter_Method("pushPacketStart");
+    emit(packetPushedSignal, packet);
+    EV_INFO << "Classifying packet " << packet->getName() << ".\n";
+    int index = classifyPacket(packet);
+    if (index < 0 || static_cast<unsigned int>(index) >= outputGates.size())
+        throw cRuntimeError("Classified packet to invalid output gate: %d", index);
+    processedTotalLength += packet->getDataLength();
+    consumers[index]->pushPacketStart(packet, outputGates[index]->getPathEndGate());
+    numProcessedPackets++;
+    updateDisplayString();
+}
+
+void PacketClassifierBase::pushPacketProgress(Packet *packet, b position, b extraProcessableLength, cGate *gate)
+{
+    Enter_Method("pushPacketProgress");
+    emit(packetPushedSignal, packet);
+    EV_INFO << "Classifying packet " << packet->getName() << ".\n";
+    int index = classifyPacket(packet);
+    if (index < 0 || static_cast<unsigned int>(index) >= outputGates.size())
+        throw cRuntimeError("Classified packet to invalid output gate: %d", index);
+    processedTotalLength += packet->getDataLength();
+    consumers[index]->pushPacketProgress(packet, position, extraProcessableLength, outputGates[index]->getPathEndGate());
+    numProcessedPackets++;
+    updateDisplayString();
+}
+
+void PacketClassifierBase::pushPacketEnd(Packet *packet, cGate *gate)
+{
+    Enter_Method("pushPacketEnd");
+    emit(packetPushedSignal, packet);
+    EV_INFO << "Classifying packet " << packet->getName() << ".\n";
+    int index = classifyPacket(packet);
+    if (index < 0 || static_cast<unsigned int>(index) >= outputGates.size())
+        throw cRuntimeError("Classified packet to invalid output gate: %d", index);
+    processedTotalLength += packet->getDataLength();
+    consumers[index]->pushPacketEnd(packet, outputGates[index]->getPathEndGate());
+    numProcessedPackets++;
+    updateDisplayString();
+}
+
 void PacketClassifierBase::handleCanPushPacket(cGate *gate)
 {
     Enter_Method("handleCanPushPacket");

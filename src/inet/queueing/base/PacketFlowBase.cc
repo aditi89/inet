@@ -16,7 +16,6 @@
 //
 
 #include "inet/common/ModuleAccess.h"
-#include "inet/common/Simsignals.h"
 #include "inet/queueing/base/PacketFlowBase.h"
 
 namespace inet {
@@ -29,20 +28,26 @@ void PacketFlowBase::initialize(int stage)
         inputGate = gate("in");
         outputGate = gate("out");
         producer = findConnectedModule<IActivePacketSource>(inputGate);
-        collector = findConnectedModule<IActivePacketSink>(outputGate);
-        provider = findConnectedModule<IPassivePacketSource>(inputGate);
         consumer = findConnectedModule<IPassivePacketSink>(outputGate);
+        provider = findConnectedModule<IPassivePacketSource>(inputGate);
+        collector = findConnectedModule<IActivePacketSink>(outputGate);
     }
     else if (stage == INITSTAGE_QUEUEING) {
-        if (consumer != nullptr) {
+        if (producer != nullptr)
             checkPushPacketSupport(inputGate);
+        if (consumer != nullptr)
             checkPushPacketSupport(outputGate);
-        }
-        if (provider != nullptr) {
+        if (provider != nullptr)
             checkPopPacketSupport(inputGate);
+        if (collector != nullptr)
             checkPopPacketSupport(outputGate);
-        }
     }
+}
+
+void PacketFlowBase::handleMessage(cMessage *message)
+{
+    auto packet = check_and_cast<Packet *>(message);
+    pushPacket(packet, packet->getArrivalGate());
 }
 
 bool PacketFlowBase::canPushSomePacket(cGate *gate) const
@@ -70,7 +75,9 @@ void PacketFlowBase::pushPacketStart(Packet *packet, cGate *gate)
     Enter_Method("pushPacketStart");
     processPacket(packet);
     consumer->pushPacketStart(packet, outputGate->getPathEndGate());
-    // TODO: numProcessedPackets? etc.
+    numProcessedPackets++;
+    processedTotalLength += packet->getTotalLength();
+    updateDisplayString();
 }
 
 void PacketFlowBase::pushPacketProgress(Packet *packet, b position, b extraProcessableLength, cGate *gate)
@@ -78,7 +85,9 @@ void PacketFlowBase::pushPacketProgress(Packet *packet, b position, b extraProce
     Enter_Method("pushPacketProgress");
     processPacket(packet);
     consumer->pushPacketProgress(packet, position, extraProcessableLength, outputGate->getPathEndGate());
-    // TODO: numProcessedPackets? etc.
+    numProcessedPackets++;
+    processedTotalLength += packet->getTotalLength();
+    updateDisplayString();
 }
 
 void PacketFlowBase::pushPacketEnd(Packet *packet, cGate *gate)
@@ -86,7 +95,9 @@ void PacketFlowBase::pushPacketEnd(Packet *packet, cGate *gate)
     Enter_Method("pushPacketEnd");
     processPacket(packet);
     consumer->pushPacketEnd(packet, outputGate->getPathEndGate());
-    // TODO: numProcessedPackets? etc.
+    numProcessedPackets++;
+    processedTotalLength += packet->getTotalLength();
+    updateDisplayString();
 }
 
 b PacketFlowBase::getPushedPacketConfirmedLength(Packet *packet, cGate *gate)

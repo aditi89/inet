@@ -1,34 +1,11 @@
-ReceiveAtL3Address
-SendToL3Address
-
-ReceiveAtMacAddress
-SendToMacAddress
-
-ReceiveAtPort
-SendToPort
-
-Forwarding
-
-Deaggregation
-Aggregation
-
-CrcInsertion
-CrcVerification
-
-Fragmentation
-Defragmentation
-
-SequenceNumbering
-Reordering
-
-Resending
-Transmitter
-
-ReceiveWithAcknowledge
-SendWithAcknowledge
-
-ReceiveWithHopLimit
-SendWithHopLimit
-
-ReceiveWithProtocol
-SendWithProtocol
+considerations for generic modular protocol and queueing elements:
+ - gates are either passive or active
+   active output gate -> passive input gate (push)
+   passive output gate -> active input gate (pull)
+ - communication between elements is either synchronous (push/pull) or asynchronous (send)
+ - processing granularity is either packet base (as a whole) or streaming (start/progress/stop)
+ - processing of a single element (input -> output):
+   - packet -> packet
+   - packet -> streaming
+   - streaming -> packet
+   - streaming -> streaming

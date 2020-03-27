@@ -29,6 +29,7 @@ class INET_API PreemtingServer : public PacketServerBase
     cGate *preemtedOutputGate = nullptr;
     IPassivePacketSink *preemtedConsumer = nullptr;
 
+    bool firstFragment = false;
     Packet *packet = nullptr;
 
   protected:

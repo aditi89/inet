@@ -37,6 +37,7 @@ class INET_API PacketFlowBase : public PacketProcessorBase, public virtual IPack
 
   protected:
     virtual void initialize(int stage) override;
+    virtual void handleMessage(cMessage *message) override;
     virtual void processPacket(Packet *packet) = 0;
 
   public:

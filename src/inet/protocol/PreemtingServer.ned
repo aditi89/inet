@@ -21,6 +21,7 @@ simple PreemtingServer extends PacketServerBase
 {
     parameters:
         int roundingLength @unit(b) = default(8b);
+        int minLength @unit(b);
         @class(PreemtingServer);
     gates:
         output preemtedOut;

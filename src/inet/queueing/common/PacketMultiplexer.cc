@@ -37,12 +37,11 @@ void PacketMultiplexer::initialize(int stage)
         consumer = findConnectedModule<IPassivePacketSink>(outputGate);
     }
     else if (stage == INITSTAGE_QUEUEING) {
-        for (int i = 0; i < (int)inputGates.size(); i++) {
-            auto inputGate = inputGates[i];
-            auto producer = producers[i];
-            checkPushPacketSupport(inputGate);
-        }
-        checkPushPacketSupport(outputGate);
+        for (int i = 0; i < (int)inputGates.size(); i++)
+            if (producers[i] != nullptr)
+                checkPushPacketSupport(inputGates[i]);
+        if (consumer != nullptr)
+            checkPushPacketSupport(outputGate);
     }
 }
 
@@ -52,6 +51,36 @@ void PacketMultiplexer::pushPacket(Packet *packet, cGate *gate)
     EV_INFO << "Forwarding pushed packet " << packet->getName() << "." << endl;
     processedTotalLength += packet->getDataLength();
     pushOrSendPacket(packet, outputGate, consumer);
+    numProcessedPackets++;
+    updateDisplayString();
+}
+
+void PacketMultiplexer::pushPacketStart(Packet *packet, cGate *gate)
+{
+    Enter_Method("pushPacketStart");
+    EV_INFO << "Forwarding pushed packet " << packet->getName() << "." << endl;
+    processedTotalLength += packet->getDataLength();
+    consumer->pushPacketStart(packet, outputGate->getPathEndGate());
+    numProcessedPackets++;
+    updateDisplayString();
+}
+
+void PacketMultiplexer::pushPacketProgress(Packet *packet, b position, b extraProcessableLength, cGate *gate)
+{
+    Enter_Method("pushPacketProgress");
+    EV_INFO << "Forwarding pushed packet " << packet->getName() << "." << endl;
+    processedTotalLength += packet->getDataLength();
+    consumer->pushPacketProgress(packet, position, extraProcessableLength, outputGate->getPathEndGate());
+    numProcessedPackets++;
+    updateDisplayString();
+}
+
+void PacketMultiplexer::pushPacketEnd(Packet *packet, cGate *gate)
+{
+    Enter_Method("pushPacketEnd");
+    EV_INFO << "Forwarding pushed packet " << packet->getName() << "." << endl;
+    processedTotalLength += packet->getDataLength();
+    consumer->pushPacketEnd(packet, outputGate->getPathEndGate());
     numProcessedPackets++;
     updateDisplayString();
 }
