@@ -27,10 +27,8 @@ using namespace inet::queueing;
 class INET_API FragmentPreambleInsertion : public PacketFlowBase
 {
   protected:
-    int SMD_Sx[4] = {0xE6, 0x4C, 0x7F, 0xB3};
-    int SMD_Cx[4] = {0x61, 0x52, 0x9E, 0x2A};
-    int fragmentIndex = 0;
-    int fragmentCount = 0;
+    uint8_t smdNumber = 0;
+    uint8_t fragmentNumber = 0;
 
   protected:
     virtual void initialize(int stage) override;

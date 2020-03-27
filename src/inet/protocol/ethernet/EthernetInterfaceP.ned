@@ -24,8 +24,8 @@ import inet.protocol.PacketSerializer;
 import inet.protocol.Padding;
 import inet.protocol.PreemtingServer;
 import inet.protocol.fragmentation.Defragmentation;
+import inet.protocol.transceiver.PreemtableTransmitter;
 import inet.protocol.transceiver.StartStopReceiver;
-import inet.protocol.transceiver.StartStopTransmitter;
 import inet.queueing.classifier.PacketClassifier;
 import inet.queueing.common.PacketMultiplexer;
 import inet.queueing.queue.PacketQueue;
@@ -48,7 +48,7 @@ module EthernetInterfaceP extends InterfaceEntry like IEthernetInterface
     submodules:
         remainingQueue: PacketQueue {
             parameters:
-                @display("p=226,470");
+                @display("p=238,470");
         }
         typeOrLengthInsertion: TypeOrLengthInsertion {
             parameters:
@@ -78,17 +78,17 @@ module EthernetInterfaceP extends InterfaceEntry like IEthernetInterface
             parameters:
                 @display("p=148,1261");
         }
-        transmitter: StartStopTransmitter {
+        transmitter: PreemtableTransmitter {
             parameters:
                 @display("p=148,1361");
         }
         typeOrLengthChecking: TypeOrLengthChecking {
             parameters:
-                @display("p=548,71");
+                @display("p=565,71");
         }
         addressChecking: AddressChecking {
             parameters:
-                @display("p=548,171");
+                @display("p=565,171");
         }
         fcsVerification: EthernetFcsVerification {
             parameters:
@@ -96,19 +96,19 @@ module EthernetInterfaceP extends InterfaceEntry like IEthernetInterface
         }
         preambleChecker: PreambleChecker {
             parameters:
-                @display("p=661,1222");
+                @display("p=661,1207");
         }
         receiver: StartStopReceiver {
             parameters:
-                @display("p=548,1400");
+                @display("p=565,1400");
         }
         fcsInsertion1: FragmentFcsInsertion {
             parameters:
-                @display("p=258,852");
+                @display("p=238,852");
         }
         preambleInsertion1: FragmentPreambleInsertion {
             parameters:
-                @display("p=252,952");
+                @display("p=238,952");
         }
         packetMultiplexer: PacketMultiplexer {
             @display("p=148,1052");
@@ -131,13 +131,13 @@ module EthernetInterfaceP extends InterfaceEntry like IEthernetInterface
             @display("p=187,630");
         }
         classifier2: PacketClassifier {
-            @display("p=187,738");
+            @display("p=165,737");
         }
         defragmentation: Defragmentation {
             @display("p=468,1013");
         }
         classifier3: PacketClassifier {
-            @display("p=548,1322");
+            @display("p=565,1311");
         }
         fcsVerification1: FragmentFcsVerification {
             parameters:
@@ -145,7 +145,7 @@ module EthernetInterfaceP extends InterfaceEntry like IEthernetInterface
         }
         preambleChecker1: FragmentPreambleChecker {
             parameters:
-                @display("p=468,1222");
+                @display("p=468,1207");
         }
         packetMultiplexer1: PacketMultiplexer {
             @display("p=565,899");

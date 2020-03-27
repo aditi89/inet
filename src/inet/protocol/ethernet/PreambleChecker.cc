@@ -32,10 +32,7 @@ void PreambleChecker::initialize(int stage)
 bool PreambleChecker::matchesPacket(Packet *packet)
 {
     const auto& header = packet->popAtFront<EthernetPhyHeader>();
-
-    return ((header->getPreambleType() == SFD)
-            && (header->getFragId() == 0)
-            && (header->getFragCount() == 0));
+    return header->getPreambleType() == SFD;
 }
 
 } // namespace inet

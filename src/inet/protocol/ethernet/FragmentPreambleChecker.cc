@@ -33,22 +33,18 @@ void FragmentPreambleChecker::initialize(int stage)
 bool FragmentPreambleChecker::matchesPacket(Packet *packet)
 {
     const auto& header = packet->popAtFront<EthernetPhyHeader>();
-    auto fragmentTag = packet->getTag<FragmentTag>();
-    if (fragmentTag->getFirstFragment()) {
-        for (fragmentIndex = 0; fragmentIndex < 4; fragmentIndex++)
-            if (SMD_Sx[fragmentIndex] == header->getFragId())
-                break;
-        if (fragmentIndex == 4)
-            return false;
+    if (packet->getTag<FragmentTag>()->getFirstFragment()) {
+        fragmentNumber = 0;
+        smdNumber = header->getSmdNumber();
     }
-    else if (SMD_Cx[fragmentIndex] != header->getFragId())
+    else if (smdNumber != header->getSmdNumber())
         return false;
-    if (fragmentCount != header->getFragCount()) {
-        fragmentCount = 0;
+    if (fragmentNumber != header->getFragmentNumber()) {
+        fragmentNumber = 0;
         return false;
     }
     else
-        fragmentCount = (fragmentCount + 1) % 4;
+        fragmentNumber = (fragmentNumber + 1) % 4;
     return true;
 }
 
