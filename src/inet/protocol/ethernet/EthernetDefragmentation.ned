@@ -15,29 +15,13 @@
 // along with this program; if not, see http://www.gnu.org/licenses/.
 //
 
-#ifndef __INET_FRAGMENTPREAMBLECHECKER_H
-#define __INET_FRAGMENTPREAMBLECHECKER_H
+package inet.protocol.ethernet;
 
-#include "inet/queueing/base/PacketFilterBase.h"
+import inet.queueing.base.PacketPusherBase;
 
-namespace inet {
-
-using namespace inet::queueing;
-
-class INET_API FragmentPreambleChecker : public PacketFilterBase
+simple EthernetDefragmentation extends PacketPusherBase
 {
-  protected:
-    int smdNumber = -1;
-    int fragmentNumber = 0;
-
-  protected:
-    virtual void initialize(int stage) override;
-
-  public:
-    virtual bool matchesPacket(Packet *packet) override;
-};
-
-} // namespace inet
-
-#endif // ifndef __INET_FRAGMENTPREAMBLECHECKER_H
-
+    parameters:
+        @display("i=block/join");
+        @class(EthernetDefragmentation);
+}

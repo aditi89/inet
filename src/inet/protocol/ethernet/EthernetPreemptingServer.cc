@@ -43,10 +43,12 @@ void EthernetPreemptingServer::startSendingPacket()
 {
     packet = provider->popPacket(inputGate->getPathStartGate());
     take(packet);
-    firstFragment = true;
-    auto fragmentTag = packet->addTag<FragmentTag>();
-    fragmentTag->setFirstFragment(true);
-    fragmentTag->setLastFragment(true);
+    auto fragmentTag = packet->findTag<FragmentTag>();
+    if (fragmentTag == nullptr) {
+        fragmentTag = packet->addTag<FragmentTag>();
+        fragmentTag->setFirstFragment(true);
+        fragmentTag->setLastFragment(true);
+    }
     packet->setArrival(getId(), inputGate->getId(), simTime());
     EV_INFO << "Sending packet " << packet->getName() << " started." << endl;
     consumer->pushPacketStart(packet->dup(), outputGate->getPathEndGate());
@@ -91,14 +93,11 @@ void EthernetPreemptingServer::handleCanPopPacket(cGate *gate)
                 // confirmed part
                 const auto& remainingData = packet->removeAtBack(packet->getTotalLength() - preemtedLength);
                 auto fragmentTag = packet->getTag<FragmentTag>();
-                fragmentTag->setFirstFragment(firstFragment);
                 fragmentTag->setLastFragment(false);
-                firstFragment = false;
                 // remaining part
                 std::string name = std::string(packet->getName()) + "-frag";
                 Packet *remainingPart = new Packet(name.c_str(), remainingData);
                 remainingPart->copyTags(*packet);
-                remainingPart->setSchedulingPriority(-1);
                 fragmentTag = remainingPart->getTag<FragmentTag>();
                 fragmentTag->setFirstFragment(false);
                 fragmentTag->setLastFragment(true);

@@ -15,6 +15,7 @@
 // along with this program; if not, see http://www.gnu.org/licenses/.
 //
 
+#include "inet/linklayer/ethernet/EtherPhyFrame_m.h"
 #include "inet/networklayer/common/DscpTag_m.h"
 #include "inet/queueing/function/PacketClassifierFunction.h"
 
@@ -27,6 +28,14 @@ static int classifyEthernetExpressOverNormal(Packet *packet)
 }
 
 Register_Packet_Classifier_Function(EthernetExpressOverNormalClassifier, classifyEthernetExpressOverNormal);
+
+static int classifyEthernetPreamble(Packet *packet)
+{
+    auto header = packet->peekAtFront<EthernetPhyHeader>();
+    return header->getPreambleType() == SFD ? 0 : 1;
+}
+
+Register_Packet_Classifier_Function(EthernetPreambleClassifier, classifyEthernetPreamble);
 
 } // namespace inet
 

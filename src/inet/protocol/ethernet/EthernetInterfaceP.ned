@@ -21,7 +21,6 @@ import inet.linklayer.contract.IEthernetInterface;
 import inet.networklayer.common.InterfaceEntry;
 import inet.protocol.InterPacketGap;
 import inet.protocol.Padding;
-import inet.protocol.fragmentation.Defragmentation;
 import inet.protocol.transceiver.PreemtableTransmitter;
 import inet.protocol.transceiver.StartStopReceiver;
 import inet.queueing.classifier.PacketClassifier;
@@ -87,11 +86,11 @@ module EthernetInterfaceP extends InterfaceEntry like IEthernetInterface
         }
         fcsVerification: EthernetFcsVerification {
             parameters:
-                @display("p=661,1013");
+                @display("p=457,1019");
         }
         preambleChecker: PreambleChecker {
             parameters:
-                @display("p=661,1207");
+                @display("p=457,1213");
         }
         receiver: StartStopReceiver {
             parameters:
@@ -128,19 +127,19 @@ module EthernetInterfaceP extends InterfaceEntry like IEthernetInterface
         classifier2: PacketClassifier {
             @display("p=165,737");
         }
-        defragmentation: Defragmentation {
-            @display("p=468,1013");
+        defragmentation: EthernetDefragmentation {
+            @display("p=644,1021");
         }
-        classifier3: PacketClassifier {
+        preambleClassifier: PacketClassifier {
             @display("p=565,1311");
         }
         fcsVerification1: FragmentFcsVerification {
             parameters:
-                @display("p=468,1114");
+                @display("p=644,1122");
         }
         preambleChecker1: FragmentPreambleChecker {
             parameters:
-                @display("p=468,1207");
+                @display("p=644,1215");
         }
         packetMultiplexer1: PacketMultiplexer {
             @display("p=565,899");
@@ -171,12 +170,12 @@ module EthernetInterfaceP extends InterfaceEntry like IEthernetInterface
         classifier2.out++ --> fcsInsertion.in;
         classifier2.out++ --> fcsInsertion1.in;
         preambleChecker1.out --> fcsVerification1.in;
-        receiver.out --> classifier3.in;
+        receiver.out --> preambleClassifier.in;
         fcsVerification1.out --> defragmentation.in;
         defragmentation.out --> packetMultiplexer1.in++;
         fcsVerification.out --> packetMultiplexer1.in++;
         packetMultiplexer1.out --> addressChecking.in;
         ifg.out --> transmitter.in;
-        classifier3.out++ --> preambleChecker.in;
-        classifier3.out++ --> preambleChecker1.in;
+        preambleClassifier.out++ --> preambleChecker.in;
+        preambleClassifier.out++ --> preambleChecker1.in;
 }

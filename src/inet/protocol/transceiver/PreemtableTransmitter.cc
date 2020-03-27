@@ -102,7 +102,7 @@ void PreemtableTransmitter::endTx()
     EV_INFO << "Ending transmission: packetName = " << txPacket->getName() << std::endl;
     auto duration = calculateDuration(txPacket);
     auto signal = new Signal(txPacket->getName());
-    signal->encapsulate(txPacket);
+    signal->encapsulate(txPacket->dup());
     signal->setDuration(duration);
     sendPacketEnd(signal, outputGate, duration);
     producer->handlePushPacketConfirmation(txPacket, inputGate->getPathStartGate(), true);

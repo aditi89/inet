@@ -38,7 +38,7 @@ void FragmentFcsVerification::initialize(int stage)
 bool FragmentFcsVerification::matchesPacket(Packet *packet)
 {
     const auto& header = packet->popAtBack<EthernetFragmentFcs>(B(4));
-    auto fragmentTag = packet->addTag<FragmentTag>();
+    auto fragmentTag = packet->getTag<FragmentTag>();
     fragmentTag->setLastFragment(header->getInverted());
     switch (header->getFcsMode()) {
         case FCS_DISABLED:
@@ -65,8 +65,7 @@ bool FragmentFcsVerification::matchesPacket(Packet *packet)
                 uint32_t computedFcs = ethernetCRC(buffer, bufferLength);
                 delete [] buffer;
                 auto receivedFcs = header->getFcs();
-                if (receivedFcs == ~computedFcs)
-                    fragmentTag->setLastFragment(true);
+                fragmentTag->setLastFragment(receivedFcs == ~computedFcs);
                 return receivedFcs == computedFcs || receivedFcs == ~computedFcs;
             }
         }

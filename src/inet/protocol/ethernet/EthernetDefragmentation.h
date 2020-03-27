@@ -15,29 +15,28 @@
 // along with this program; if not, see http://www.gnu.org/licenses/.
 //
 
-#ifndef __INET_FRAGMENTPREAMBLECHECKER_H
-#define __INET_FRAGMENTPREAMBLECHECKER_H
+#ifndef __INET_ETHERNETDEFRAGMENTATION_H
+#define __INET_ETHERNETDEFRAGMENTATION_H
 
-#include "inet/queueing/base/PacketFilterBase.h"
+#include "inet/queueing/base/PacketPusherBase.h"
 
 namespace inet {
 
 using namespace inet::queueing;
 
-class INET_API FragmentPreambleChecker : public PacketFilterBase
+class INET_API EthernetDefragmentation : public PacketPusherBase
 {
   protected:
-    int smdNumber = -1;
-    int fragmentNumber = 0;
+    Packet *packet = nullptr;
 
   protected:
     virtual void initialize(int stage) override;
 
   public:
-    virtual bool matchesPacket(Packet *packet) override;
+    virtual void pushPacket(Packet *packet, cGate *gate) override;
 };
 
 } // namespace inet
 
-#endif // ifndef __INET_FRAGMENTPREAMBLECHECKER_H
+#endif // ifndef __INET_ETHERNETDEFRAGMENTATION_H
 

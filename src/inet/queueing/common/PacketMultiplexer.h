@@ -49,6 +49,7 @@ class INET_API PacketMultiplexer : public PassivePacketSinkBase, public IActiveP
     virtual void pushPacketStart(Packet *packet, cGate *gate = nullptr) override;
     virtual void pushPacketProgress(Packet *packet, b position, b extraProcessableLength = b(0), cGate *gate = nullptr) override;
     virtual void pushPacketEnd(Packet *packet, cGate *gate = nullptr) override;
+    virtual b getPushedPacketConfirmedLength(Packet *packet, cGate *gate = nullptr) override;
 
     virtual void handleCanPushPacket(cGate *gate) override;
 

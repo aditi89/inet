@@ -105,6 +105,12 @@ void PacketClassifierBase::pushPacketEnd(Packet *packet, cGate *gate)
     updateDisplayString();
 }
 
+b PacketClassifierBase::getPushedPacketConfirmedLength(Packet *packet, cGate *gate)
+{
+    int index = classifyPacket(packet);
+    return consumers[index]->getPushedPacketConfirmedLength(packet, outputGates[index]->getPathEndGate());
+}
+
 void PacketClassifierBase::handleCanPushPacket(cGate *gate)
 {
     Enter_Method("handleCanPushPacket");

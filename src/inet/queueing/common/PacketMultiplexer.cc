@@ -85,6 +85,11 @@ void PacketMultiplexer::pushPacketEnd(Packet *packet, cGate *gate)
     updateDisplayString();
 }
 
+b PacketMultiplexer::getPushedPacketConfirmedLength(Packet *packet, cGate *gate)
+{
+    return consumer->getPushedPacketConfirmedLength(packet, outputGate->getPathEndGate());
+}
+
 void PacketMultiplexer::handleCanPushPacket(cGate *gate)
 {
     Enter_Method("handleCanPushPacket");

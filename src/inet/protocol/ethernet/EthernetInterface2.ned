@@ -18,7 +18,7 @@
 package inet.protocol.ethernet;
 
 import inet.common.MessageDispatcher;
-import inet.protocol.PreemtingServer;
+import inet.protocol.PreemptingServer;
 import inet.protocol.checksum.FcsInsertion;
 import inet.protocol.checksum.FcsVerification;
 import inet.protocol.fragmentation.Defragmentation;
@@ -158,7 +158,7 @@ module EthernetInterface2
             parameters:
                 @display("p=100,900");
         }
-        preemtingServer: PreemtingServer {
+        preemptingServer: PreemptingServer {
             parameters:
                 @display("p=200,1000");
         }
@@ -219,9 +219,9 @@ module EthernetInterface2
         addressInsertion.out --> qOrAndAeTagger.in;
         qOrAndAeTagger.out --> multiplexer3.in++;
         multiplexer3.out --> inProgressQueue.in;
-        inProgressQueue.out --> preemtingServer.in;
-        preemtingServer.out --> fcsInsertion.in;
-        preemtingServer.preemtedOut --> multiplexer3.in++;
+        inProgressQueue.out --> preemptingServer.in;
+        preemptingServer.out --> fcsInsertion.in;
+        preemptingServer.preemtedOut --> multiplexer3.in++;
         fcsInsertion.out --> preambleInsertion.in;
         preambleInsertion.out --> preemptableTransmitter.in;
         preemptableTransmitter.out --> connectionX.in;

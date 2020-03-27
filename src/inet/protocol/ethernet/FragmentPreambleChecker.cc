@@ -33,21 +33,33 @@ void FragmentPreambleChecker::initialize(int stage)
 bool FragmentPreambleChecker::matchesPacket(Packet *packet)
 {
     const auto& header = packet->popAtFront<EthernetPhyHeader>();
-    if (header->getPreambleType() != SMD_Sx || header->getPreambleType() != SMD_Cx)
+    if (header->getPreambleType() != SMD_Sx && header->getPreambleType() != SMD_Cx)
         return false;
-    else if (header->getSmdNumber() == 0 && header->getFragmentNumber() == 0) {
-        smdNumber = 0;
-        fragmentNumber = 0;
+    else {
+        auto fragmentTag = packet->addTag<FragmentTag>();
+        if (header->getSmdNumber() == smdNumber) {
+            if (header->getFragmentNumber() == fragmentNumber) {
+                fragmentNumber = (fragmentNumber + 1) % 4;
+                return true;
+            }
+            else {
+                smdNumber = -1;
+                return false;
+            }
+        }
+        else {
+            if (header->getFragmentNumber() == 0) {
+                smdNumber = header->getSmdNumber();
+                fragmentNumber = 1;
+                fragmentTag->setFirstFragment(true);
+                return true;
+            }
+            else {
+                smdNumber = -1;
+                return false;
+            }
+        }
     }
-    else if (smdNumber != header->getSmdNumber())
-        return false;
-    else if (fragmentNumber != header->getFragmentNumber()) {
-        fragmentNumber = 0;
-        return false;
-    }
-    else
-        fragmentNumber = (fragmentNumber + 1) % 4;
-    return true;
 }
 
 } // namespace inet
