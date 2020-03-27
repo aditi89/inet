@@ -29,8 +29,8 @@ void EthernetFcsVerification::initialize(int stage)
 {
     PacketFilterBase::initialize(stage);
     if (stage == INITSTAGE_LOCAL) {
-        registerService(IProtocol::fcs, nullptr, inputGate);
-        registerProtocol(IProtocol::fcs, nullptr, outputGate);
+//        registerService(IProtocol::fcs, nullptr, inputGate);
+//        registerProtocol(IProtocol::fcs, nullptr, outputGate);
     }
 }
 

@@ -70,7 +70,7 @@ module LinkLayerNodeBase extends NodeBase
             parameters:
                 @display("p=300,526,row,150;q=txQueue");
         }
-        eth[sizeof(ethg)]: <default("EthernetInterface")> like IEthernetInterface {
+        eth[sizeof(ethg)]: <default("EthernetInterface1")> like IEthernetInterface {
             parameters:
                 @display("p=900,526,row,150;q=txQueue");
         }

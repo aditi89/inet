@@ -31,8 +31,8 @@ void EthernetFcsInsertion::initialize(int stage)
     PacketFlowBase::initialize(stage);
     if (stage == INITSTAGE_LOCAL) {
         fcsMode = parseFcsMode(par("fcsMode"));
-        registerService(IProtocol::fcs, inputGate, nullptr);
-        registerProtocol(IProtocol::fcs, outputGate, nullptr);
+//        registerService(IProtocol::fcs, inputGate, nullptr);
+//        registerProtocol(IProtocol::fcs, outputGate, nullptr);
     }
 }
 
@@ -68,7 +68,7 @@ void EthernetFcsInsertion::processPacket(Packet *packet)
             throw cRuntimeError("Unknown FCS mode: %d", (int)fcsMode);
     }
     packet->insertAtBack(header);
-    packet->addTagIfAbsent<PacketProtocolTag>()->setProtocol(&IProtocol::fcs);
+//    packet->addTagIfAbsent<PacketProtocolTag>()->setProtocol(&IProtocol::fcs);
 }
 
 } // namespace inet
