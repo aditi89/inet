@@ -46,7 +46,7 @@ class INET_API PacketSchedulerBase : public PacketProcessorBase, public IActiveP
     virtual bool supportsPopPacket(cGate *gate) const override { return true; }
 
     virtual bool canPopSomePacket(cGate *gate) const override;
-    virtual Packet *canPopPacket(cGate *gate) const override { throw cRuntimeError("Invalid operation"); }
+    virtual Packet *canPopPacket(cGate *gate) const override;
     virtual Packet *popPacket(cGate *gate) override;
 
     virtual void handleCanPopPacket(cGate *gate) override;

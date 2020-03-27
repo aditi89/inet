@@ -19,7 +19,6 @@ package inet.protocol.ethernet;
 
 import inet.queueing.base.PacketFilterBase;
 
-
 simple PreambleChecker extends PacketFilterBase
 {
     parameters:

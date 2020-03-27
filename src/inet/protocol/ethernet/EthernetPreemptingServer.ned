@@ -13,16 +13,15 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 //
 
-package inet.protocol;
+package inet.protocol.ethernet;
 
 import inet.queueing.base.PacketServerBase;
 
-simple PreemtingServer extends PacketServerBase
+simple EthernetPreemptingServer extends PacketServerBase
 {
     parameters:
         int roundingLength @unit(b) = default(8b);
-        int minLength @unit(b);
-        @class(PreemtingServer);
+        @class(EthernetPreemptingServer);
     gates:
         output preemtedOut;
 }

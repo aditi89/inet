@@ -32,12 +32,14 @@ void FragmentPreambleInsertion::initialize(int stage)
 
 void FragmentPreambleInsertion::processPacket(Packet *packet)
 {
+    auto fragmentTag = packet->getTag<FragmentTag>();
     const auto& header = makeShared<EthernetPhyHeader>();
+    header->setPreambleType(fragmentTag->getFirstFragment() ? SMD_Sx : SMD_Cx);
     header->setSmdNumber(smdNumber);
     header->setFragmentNumber(fragmentNumber);
     packet->insertAtFront(header);
     fragmentNumber = (fragmentNumber + 1) % 4;
-    if (packet->getTag<FragmentTag>()->getLastFragment()) {
+    if (fragmentTag->getLastFragment()) {
         fragmentNumber = 0;
         smdNumber = (smdNumber + 1) % 4;
     }

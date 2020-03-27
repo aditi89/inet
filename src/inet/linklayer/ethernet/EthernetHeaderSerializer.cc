@@ -25,6 +25,7 @@ Register_Serializer(EthernetControlFrame, EthernetControlFrameSerializer);
 Register_Serializer(EthernetPauseFrame, EthernetControlFrameSerializer);
 Register_Serializer(EthernetPadding, EthernetPaddingSerializer);
 Register_Serializer(EthernetFcs, EthernetFcsSerializer);
+Register_Serializer(EthernetFragmentFcs, EthernetFcsSerializer);
 Register_Serializer(EthernetPhyHeader, EthernetPhyHeaderSerializer);
 
 static void serializeQtag(MemoryOutputStream& stream, uint16_t ethType, const Ieee8021qHeader *qtag)

@@ -16,6 +16,7 @@
 #ifndef __INET_PREEMTABLETRANSMITTER_H
 #define __INET_PREEMTABLETRANSMITTER_H
 
+#include "inet/physicallayer/common/packetlevel/Signal.h"
 #include "inet/queueing/base/PassivePacketSinkBase.h"
 #include "inet/queueing/contract/IActivePacketSource.h"
 
@@ -23,6 +24,7 @@ namespace inet {
 
 using namespace inet::units::values;
 using namespace inet::queueing;
+using namespace inet::physicallayer;
 
 class INET_API PreemtableTransmitter : public PassivePacketSinkBase
 {
@@ -46,7 +48,7 @@ class INET_API PreemtableTransmitter : public PassivePacketSinkBase
     virtual void abortTx();
 
     virtual simtime_t calculateDuration(Packet *packet);
-    virtual void scheduleTxEndTimer(Packet *packet, simtime_t timePosition);
+    virtual void scheduleTxEndTimer(Signal *signal, simtime_t timePosition);
 
   public:
     virtual ~PreemtableTransmitter();

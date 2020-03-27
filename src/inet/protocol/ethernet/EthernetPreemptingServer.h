@@ -13,8 +13,8 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 //
 
-#ifndef __INET_PREEMTINGSERVER_H
-#define __INET_PREEMTINGSERVER_H
+#ifndef __INET_ETHERNETPREEMPTINGSERVER_H
+#define __INET_ETHERNETPREEMPTINGSERVER_H
 
 #include "inet/queueing/base/PacketServerBase.h"
 
@@ -22,7 +22,7 @@ namespace inet {
 
 using namespace inet::queueing;
 
-class INET_API PreemtingServer : public PacketServerBase
+class INET_API EthernetPreemptingServer : public PacketServerBase
 {
   protected:
     b roundingLength = b(-1);
@@ -49,5 +49,5 @@ class INET_API PreemtingServer : public PacketServerBase
 
 } // namespace inet
 
-#endif // ifndef __INET_PREEMTINGSERVER_H
+#endif // ifndef __INET_ETHERNETPREEMPTINGSERVER_H
 

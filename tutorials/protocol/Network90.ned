@@ -18,7 +18,7 @@
 package inet.tutorials.protocol;
 
 import inet.protocol.InterPacketGap;
-import inet.protocol.PreemtingServer;
+import inet.protocol.PreemptingServer;
 import inet.protocol.checksum.CrcInsertion;
 import inet.protocol.checksum.CrcVerification;
 import inet.protocol.classifier.DynamicClassifier;
@@ -84,7 +84,7 @@ module SenderHost
         inProgressQueue: InProgressQueue {
             @display("p=150,900");
         }
-        preemtingServer: PreemtingServer {
+        preemptingServer: PreemptingServer {
             @display("p=250,1000");
         }
         crcInsertion: CrcInsertion {
@@ -109,9 +109,9 @@ module SenderHost
         server.out --> fragmentation.in;
         fragmentation.out --> multiplexer2.in++;
         multiplexer2.out --> inProgressQueue.in;
-        inProgressQueue.out --> preemtingServer.in;
-        preemtingServer.preemtedOut --> multiplexer2.in++;
-        preemtingServer.out --> crcInsertion.in;
+        inProgressQueue.out --> preemptingServer.in;
+        preemptingServer.preemtedOut --> multiplexer2.in++;
+        preemptingServer.out --> crcInsertion.in;
         crcInsertion.out --> interPacketGap.in;
         interPacketGap.out --> transmitter.in;
         transmitter.out --> g;

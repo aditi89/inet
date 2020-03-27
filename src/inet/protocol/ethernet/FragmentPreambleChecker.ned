@@ -17,9 +17,9 @@
 
 package inet.protocol.ethernet;
 
-import inet.queueing.base.PacketFlowBase;
+import inet.queueing.base.PacketFilterBase;
 
-simple FragmentPreambleChecker extends PacketFlowBase
+simple FragmentPreambleChecker extends PacketFilterBase
 {
     parameters:
         @class(FragmentPreambleChecker);

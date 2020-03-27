@@ -20,9 +20,7 @@ package inet.protocol.ethernet;
 import inet.linklayer.contract.IEthernetInterface;
 import inet.networklayer.common.InterfaceEntry;
 import inet.protocol.InterPacketGap;
-import inet.protocol.PacketSerializer;
 import inet.protocol.Padding;
-import inet.protocol.PreemtingServer;
 import inet.protocol.fragmentation.Defragmentation;
 import inet.protocol.transceiver.PreemtableTransmitter;
 import inet.protocol.transceiver.StartStopReceiver;
@@ -30,6 +28,7 @@ import inet.queueing.classifier.PacketClassifier;
 import inet.queueing.common.PacketMultiplexer;
 import inet.queueing.queue.PacketQueue;
 import inet.queueing.scheduler.PriorityScheduler;
+
 
 module EthernetInterfaceP extends InterfaceEntry like IEthernetInterface
 {
@@ -73,10 +72,6 @@ module EthernetInterfaceP extends InterfaceEntry like IEthernetInterface
         ifg: InterPacketGap {
             parameters:
                 @display("p=148,1161");
-        }
-        serializer: PacketSerializer {
-            parameters:
-                @display("p=148,1261");
         }
         transmitter: PreemtableTransmitter {
             parameters:
@@ -127,7 +122,7 @@ module EthernetInterfaceP extends InterfaceEntry like IEthernetInterface
             parameters:
                 @display("p=384,470");
         }
-        preemtingServer: PreemtingServer {
+        preemptingServer: EthernetPreemptingServer {
             @display("p=187,630");
         }
         classifier2: PacketClassifier {
@@ -153,8 +148,6 @@ module EthernetInterfaceP extends InterfaceEntry like IEthernetInterface
     connections:
         typeOrLengthInsertion.out --> addressInsertion.in;
         fcsInsertion.out --> preambleInsertion.in;
-        ifg.out --> serializer.in;
-        serializer.out --> transmitter.in;
         transmitter.out --> phys$o;
         phys$i --> receiver.in;
         preambleChecker.out --> fcsVerification.in;
@@ -169,20 +162,21 @@ module EthernetInterfaceP extends InterfaceEntry like IEthernetInterface
         remainingQueue.out --> priorityScheduler.in++;
         upperLayerIn --> typeOrLengthInsertion.in;
         normalQueue.out --> priorityScheduler.in++;
-        priorityScheduler.out --> preemtingServer.in;
-        preemtingServer.preemtedOut --> remainingQueue.in;
+        priorityScheduler.out --> preemptingServer.in;
+        preemptingServer.preemtedOut --> remainingQueue.in;
         classifier1.out++ --> normalQueue.in;
-        preemtingServer.out --> classifier2.in;
+        preemptingServer.out --> classifier2.in;
         addressInsertion.out --> padding.in;
         padding.out --> classifier1.in;
         classifier2.out++ --> fcsInsertion.in;
         classifier2.out++ --> fcsInsertion1.in;
         preambleChecker1.out --> fcsVerification1.in;
         receiver.out --> classifier3.in;
-        classifier3.out++ --> preambleChecker1.in;
         fcsVerification1.out --> defragmentation.in;
-        classifier3.out++ --> preambleChecker.in;
         defragmentation.out --> packetMultiplexer1.in++;
         fcsVerification.out --> packetMultiplexer1.in++;
         packetMultiplexer1.out --> addressChecking.in;
+        ifg.out --> transmitter.in;
+        classifier3.out++ --> preambleChecker.in;
+        classifier3.out++ --> preambleChecker1.in;
 }

@@ -15,18 +15,17 @@
 
 #include "inet/common/ModuleAccess.h"
 #include "inet/linklayer/common/UserPriorityTag_m.h"
-#include "inet/protocol/ethernet/FragmentTag_m.h"
 #include "inet/protocol/fragmentation/FragmentNumberHeader_m.h"
 #include "inet/protocol/IProtocol.h"
 #include "inet/protocol/ordering/SequenceNumberHeader_m.h"
-#include "inet/protocol/PreemtingServer.h"
+#include "PreemptingServer.h"
 #include "inet/queueing/contract/IPacketQueue.h"
 
 namespace inet {
 
-Define_Module(PreemtingServer);
+Define_Module(PreemptingServer);
 
-void PreemtingServer::initialize(int stage)
+void PreemptingServer::initialize(int stage)
 {
     PacketServerBase::initialize(stage);
     if (stage == INITSTAGE_LOCAL) {
@@ -39,10 +38,9 @@ void PreemtingServer::initialize(int stage)
     }
 }
 
-void PreemtingServer::startSendingPacket()
+void PreemptingServer::startSendingPacket()
 {
     packet = provider->popPacket(inputGate->getPathStartGate());
-    firstFragment = true;
     take(packet);
     packet->setArrival(getId(), inputGate->getId(), simTime());
     EV_INFO << "Sending packet " << packet->getName() << " started." << endl;
@@ -52,19 +50,19 @@ void PreemtingServer::startSendingPacket()
     updateDisplayString();
 }
 
-void PreemtingServer::endSendingPacket()
+void PreemptingServer::endSendingPacket()
 {
     EV_INFO << "Sending packet " << packet->getName() << " ended.\n";
     delete packet;
     packet = nullptr;
 }
 
-int PreemtingServer::getPriority(Packet *packet) const
+int PreemptingServer::getPriority(Packet *packet) const
 {
     return packet->getTag<UserPriorityReq>()->getUserPriority();
 }
 
-void PreemtingServer::handleCanPushPacket(cGate *gate)
+void PreemptingServer::handleCanPushPacket(cGate *gate)
 {
     Enter_Method("handleCanPushPacket");
     if (packet != nullptr)
@@ -73,7 +71,7 @@ void PreemtingServer::handleCanPushPacket(cGate *gate)
         startSendingPacket();
 }
 
-void PreemtingServer::handleCanPopPacket(cGate *gate)
+void PreemptingServer::handleCanPopPacket(cGate *gate)
 {
     Enter_Method("handleCanPopPacket");
     if (consumer->canPushSomePacket(outputGate->getPathEndGate()))
@@ -90,10 +88,6 @@ void PreemtingServer::handleCanPopPacket(cGate *gate)
                 const auto& remainingData = packet->removeAtBack(packet->getTotalLength() - preemtedLength);
                 confirmedPartFragmentNumberHeader->setLastFragment(false);
                 packet->insertAtBack(confirmedPartFragmentNumberHeader);
-                auto fragmentTag = packet->addTagIfAbsent<FragmentTag>();
-                fragmentTag->setFirstFragment(firstFragment);
-                fragmentTag->setLastFragment(false);
-                firstFragment = false;
                 // remaining part
                 std::string name = packet->getName();
                 name = name.substr(0, name.rfind('-')) + "-frag" + std::to_string(confirmedPartFragmentNumberHeader->getFragmentNumber() + 1);
@@ -105,9 +99,6 @@ void PreemtingServer::handleCanPopPacket(cGate *gate)
                 remainingPartFragmentNumberHeader->setFragmentNumber(confirmedPartFragmentNumberHeader->getFragmentNumber() + 1);
                 remainingPartFragmentNumberHeader->setLastFragment(true);
                 remainingPart->insertAtBack(remainingPartFragmentNumberHeader);
-                fragmentTag = remainingPart->addTag<FragmentTag>();
-                fragmentTag->setFirstFragment(false);
-                fragmentTag->setLastFragment(true);
                 // send parts
                 consumer->pushPacketProgress(packet, preemtedLength, packet->getTotalLength() - preemtedLength, outputGate->getPathEndGate());
                 packet = nullptr;

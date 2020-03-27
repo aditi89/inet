@@ -32,6 +32,7 @@ void PreambleInsertion::initialize(int stage)
 void PreambleInsertion::processPacket(Packet *packet)
 {
     const auto& header = makeShared<EthernetPhyHeader>();
+    header->setPreambleType(SFD);
     packet->insertAtFront(header);
 }
 
