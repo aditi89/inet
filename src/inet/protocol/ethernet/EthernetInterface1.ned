@@ -36,7 +36,7 @@ module EthernetInterface1 extends InterfaceEntry like IEthernetInterface
         bool multicast = default(true);
         bool promiscuous = default(false);  // if true, all packets are received, otherwise only the
                                             // ones with matching destination MAC address
-        double bitrate @unit(bps);
+        double bitrate @unit(bps) = default(nan bps);
         int mtu @unit(B) = default(1500B);
         string fcsMode @enum("declared","computed") = default("declared");
         @class(InterfaceEntry);
@@ -110,6 +110,9 @@ module EthernetInterface1 extends InterfaceEntry like IEthernetInterface
         receiver: StartStopReceiver {
             parameters:
                 @display("p=450,1000");
+        }
+        channelDatarateReader: ChannelDatarateReader {
+            @display("p=301,1000");
         }
     connections:
         upperLayerIn --> queue.in;
