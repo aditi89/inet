@@ -91,10 +91,7 @@ module EthernetInterface1b extends InterfaceEntry like IEthernetInterface
             parameters:
                 @display("p=150,1000");
         }
-        fcsInsertion2: EthernetFcsInsertion {
-            @display("p=450,100");
-        }
-        fcsVerification: EthernetFcsVerification {
+        fcsVerification: EthernetFcsVerification2 {
             parameters:
                 @display("p=450,600");
         }
@@ -108,9 +105,6 @@ module EthernetInterface1b extends InterfaceEntry like IEthernetInterface
         }
         channelDatarateReader: ChannelDatarateReader {
             @display("p=301,1000");
-        }
-        packetTrimmer2: PacketTrimmer {
-            @display("p=450,204");
         }
     connections:
         upperLayerIn --> queue.in;
@@ -127,8 +121,6 @@ module EthernetInterface1b extends InterfaceEntry like IEthernetInterface
         phys$i --> receiver.in;
         receiver.out --> preambleChecker.in;
         preambleChecker.out --> fcsVerification.in;
-        fcsVerification.out --> packetTrimmer2.in;
-        packetTrimmer2.out --> fcsInsertion2.in;
-        fcsInsertion2.out --> upperLayerOut;
+        fcsVerification.out --> { @display("m=n"); } --> upperLayerOut;
 }
 
