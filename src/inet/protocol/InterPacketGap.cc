@@ -44,8 +44,8 @@ void InterPacketGap::handleMessage(cMessage *message)
             lastPacket = nullptr;
         }
         else if (auto progress = dynamic_cast<cProgress *>(message)) {
-            packet = check_and_cast<Packet *>(progress->getPacket());
-            receiveProgress(progress->getPacket(), progress->getArrivalGate(), progress->getKind(), progress->getBitPosition(), progress->getTimePosition(), progress->getExtraProcessableBitLength(), progress->getExtraProcessableDuration());
+            packet = check_and_cast<Packet *>(progress->removePacket());
+            receiveProgress(packet, progress->getArrivalGate(), progress->getKind(), progress->getBitPosition(), progress->getTimePosition(), progress->getExtraProcessableBitLength(), progress->getExtraProcessableDuration());
             delete progress;
         }
         else
@@ -66,7 +66,7 @@ void InterPacketGap::handleMessage(cMessage *message)
             if (packet == lastPacket) {     //FIXME
                 lastPacketEndTime = now + lastDelay + packet->getDuration() - progress->getTimePosition();
                 if (lastDelay == 0)
-                    receiveProgress(progress->getPacket(), progress->getArrivalGate(), progress->getKind(), progress->getBitPosition(), progress->getTimePosition(), progress->getExtraProcessableBitLength(), progress->getExtraProcessableDuration());
+                    receiveProgress(progress->removePacket(), progress->getArrivalGate(), progress->getKind(), progress->getBitPosition(), progress->getTimePosition(), progress->getExtraProcessableBitLength(), progress->getExtraProcessableDuration());
                 else
                     scheduleAt(simTime() + lastDelay, message);
             }
@@ -78,7 +78,7 @@ void InterPacketGap::handleMessage(cMessage *message)
                     lastDelay = 0;
                 lastPacketEndTime = now + lastDelay + packet->getDuration() - progress->getTimePosition();
                 if (lastDelay == 0)
-                    receiveProgress(progress->getPacket(), progress->getArrivalGate(), progress->getKind(), progress->getBitPosition(), progress->getTimePosition(), progress->getExtraProcessableBitLength(), progress->getExtraProcessableDuration());
+                    receiveProgress(progress->removePacket(), progress->getArrivalGate(), progress->getKind(), progress->getBitPosition(), progress->getTimePosition(), progress->getExtraProcessableBitLength(), progress->getExtraProcessableDuration());
                 else {
                     EV_INFO << "Inserting packet gap before " << packet->getName() << "." << endl;
                     scheduleAt(now + lastDelay, message);
