@@ -186,6 +186,7 @@ b InterPacketGap::getPushedPacketConfirmedLength(Packet *packet, cGate *gate)
 void InterPacketGap::handlePushPacketConfirmation(Packet *packet, cGate *gate, bool successful)
 {
     lastPacketEndTime = simTime();
+    producer->handlePushPacketConfirmation(packet, inputGate->getPathStartGate(), successful);
 }
 
 void InterPacketGap::refreshDisplay() const

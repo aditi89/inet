@@ -68,6 +68,7 @@ void PreemtableTransmitter::pushPacketProgress(Packet *packet, b position, b ext
     simtime_t timePosition = simTime() - txStartTime;
     int bitPosition = std::floor(datarate.get() * timePosition.dbl());
     txPacket = packet;
+    txPacket->clearTags();
     auto duration = calculateDuration(txPacket);
     auto signal = new Signal(txPacket->getName());
     signal->encapsulate(txPacket->dup());
@@ -117,9 +118,11 @@ void PreemtableTransmitter::abortTx()
     b transmittedLength = getPushedPacketConfirmedLength(txPacket, inputGate);
     txPacket->eraseAtBack(txPacket->getTotalLength() - transmittedLength);
     auto duration = calculateDuration(txPacket);
-    txPacket->setDuration(duration);
     EV_INFO << "Aborting transmission: packetName = " << txPacket->getName() << ", length = " << txPacket->getTotalLength() << ", duration = " << duration << std::endl;
-    sendPacketEnd(txPacket, outputGate, duration);
+    auto signal = new Signal(txPacket->getName());
+    signal->encapsulate(txPacket->dup());
+    signal->setDuration(duration);
+    sendPacketEnd(signal, outputGate, duration);
     producer->handlePushPacketConfirmation(txPacket, inputGate->getPathStartGate(), true);
     txPacket = nullptr;
     txStartTime = -1;

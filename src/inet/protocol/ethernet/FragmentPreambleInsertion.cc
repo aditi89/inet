@@ -38,7 +38,8 @@ void FragmentPreambleInsertion::processPacket(Packet *packet)
     header->setSmdNumber(smdNumber);
     header->setFragmentNumber(fragmentNumber);
     packet->insertAtFront(header);
-    fragmentNumber = (fragmentNumber + 1) % 4;
+    if (!fragmentTag->getFirstFragment())
+        fragmentNumber = (fragmentNumber + 1) % 4;
     if (fragmentTag->getLastFragment()) {
         fragmentNumber = 0;
         smdNumber = (smdNumber + 1) % 4;

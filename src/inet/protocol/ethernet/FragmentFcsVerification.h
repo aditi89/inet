@@ -28,6 +28,9 @@ using namespace inet::queueing;
 class INET_API FragmentFcsVerification : public PacketFilterBase
 {
   protected:
+    uint32_t completeFcs = 0;
+
+  protected:
     virtual void initialize(int stage) override;
 
   public:

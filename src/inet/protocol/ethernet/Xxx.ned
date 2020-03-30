@@ -15,30 +15,14 @@
 // along with this program; if not, see http://www.gnu.org/licenses/.
 //
 
-#ifndef __INET_FRAGMENTFCSINSERTION_H
-#define __INET_FRAGMENTFCSINSERTION_H
+package inet.protocol.ethernet;
 
-#include "inet/linklayer/common/FcsMode_m.h"
-#include "inet/queueing/base/PacketFlowBase.h"
+import inet.queueing.base.PacketFlowBase;
 
-namespace inet {
-
-using namespace inet::queueing;
-
-class INET_API FragmentFcsInsertion : public PacketFlowBase
+simple Xxx extends PacketFlowBase
 {
-  protected:
-    uint32_t completeFcs = 0;
-
-  protected:
-    FcsMode fcsMode = FCS_MODE_UNDEFINED;
-
-  protected:
-    virtual void initialize(int stage) override;
-    virtual void processPacket(Packet *packet) override;
-};
-
-} // namespace inet
-
-#endif // ifndef __INET_FRAGMENTFCSINSERTION_H
-
+    parameters:
+        @class(Xxx);
+        @display("i=block/star");
+        @signal[packetSentToLower](type=cPacket);
+}

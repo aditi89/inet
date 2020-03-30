@@ -24,4 +24,5 @@ simple PreambleInsertion extends PacketFlowBase
     parameters:
         @class(PreambleInsertion);
         @display("i=block/star");
+        @signal[packetSentToLower](type=cPacket);
 }

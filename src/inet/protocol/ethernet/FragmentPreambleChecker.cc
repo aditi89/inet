@@ -39,7 +39,8 @@ bool FragmentPreambleChecker::matchesPacket(Packet *packet)
         auto fragmentTag = packet->addTag<FragmentTag>();
         if (header->getSmdNumber() == smdNumber) {
             if (header->getFragmentNumber() == fragmentNumber) {
-                fragmentNumber = (fragmentNumber + 1) % 4;
+                if (header->getPreambleType() == SMD_Cx)
+                    fragmentNumber = (fragmentNumber + 1) % 4;
                 return true;
             }
             else {

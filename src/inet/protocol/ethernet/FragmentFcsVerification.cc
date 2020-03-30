@@ -39,7 +39,9 @@ bool FragmentFcsVerification::matchesPacket(Packet *packet)
 {
     const auto& header = packet->popAtBack<EthernetFragmentFcs>(B(4));
     auto fragmentTag = packet->getTag<FragmentTag>();
-    fragmentTag->setLastFragment(header->getInverted());
+    fragmentTag->setLastFragment(!header->getInverted());
+    if (fragmentTag->getFirstFragment())
+        completeFcs = 0;
     switch (header->getFcsMode()) {
         case FCS_DISABLED:
             // if the FCS mode is disabled, then the check passes if the FCS is 0
@@ -62,11 +64,13 @@ bool FragmentFcsVerification::matchesPacket(Packet *packet)
                 auto bufferLength = B(data->getChunkLength()).get();
                 auto buffer = new uint8_t[bufferLength];
                 data->copyToBuffer(buffer, bufferLength);
+                completeFcs = ethernetCRC(buffer, bufferLength, completeFcs);
                 uint32_t computedFcs = ethernetCRC(buffer, bufferLength);
                 delete [] buffer;
                 auto receivedFcs = header->getFcs();
-                fragmentTag->setLastFragment(receivedFcs == ~computedFcs);
-                return receivedFcs == computedFcs || receivedFcs == ~computedFcs;
+                bool notLastFragment = receivedFcs == (computedFcs ^ 0xFFFF0000);
+                fragmentTag->setLastFragment(!notLastFragment);
+                return notLastFragment || receivedFcs == computedFcs;
             }
         }
         default:

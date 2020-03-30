@@ -42,7 +42,9 @@ void FragmentFcsInsertion::processPacket(Packet *packet)
     auto fragmentTag = packet->getTag<FragmentTag>();
     const auto& header = makeShared<EthernetFragmentFcs>();
     header->setFcsMode(fcsMode);
-    header->setInverted(fragmentTag->getLastFragment());
+    header->setInverted(!fragmentTag->getLastFragment());
+    if (fragmentTag->getFirstFragment())
+        completeFcs = 0;
     switch (fcsMode) {
         case FCS_DISABLED:
             // if the FCS mode is disabled, then the FCS is 0
@@ -62,10 +64,9 @@ void FragmentFcsInsertion::processPacket(Packet *packet)
             auto bufferLength = B(data->getChunkLength()).get();
             auto buffer = new uint8_t[bufferLength];
             data->copyToBuffer(buffer, bufferLength);
-            uint32_t fcs = ethernetCRC(buffer, bufferLength);
-            if (fragmentTag->getLastFragment())
-                fcs = ~fcs;
-            header->setFcs(fcs);
+            completeFcs = ethernetCRC(buffer, bufferLength, completeFcs);
+            uint32_t fragmentFcs = ethernetCRC(buffer, bufferLength);
+            header->setFcs(fragmentTag->getLastFragment() ? completeFcs : fragmentFcs ^ 0xFFFF0000);
             delete [] buffer;
             break;
         }

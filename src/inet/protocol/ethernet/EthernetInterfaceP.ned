@@ -28,7 +28,6 @@ import inet.queueing.common.PacketMultiplexer;
 import inet.queueing.queue.PacketQueue;
 import inet.queueing.scheduler.PriorityScheduler;
 
-
 module EthernetInterfaceP extends InterfaceEntry like IEthernetInterface
 {
     parameters:
@@ -70,7 +69,7 @@ module EthernetInterfaceP extends InterfaceEntry like IEthernetInterface
         }
         ifg: InterPacketGap {
             parameters:
-                @display("p=148,1161");
+                @display("p=148,1245");
         }
         transmitter: PreemtableTransmitter {
             parameters:
@@ -86,11 +85,11 @@ module EthernetInterfaceP extends InterfaceEntry like IEthernetInterface
         }
         fcsVerification: EthernetFcsVerification {
             parameters:
-                @display("p=457,1019");
+                @display("p=457,896");
         }
         preambleChecker: PreambleChecker {
             parameters:
-                @display("p=457,1213");
+                @display("p=457,1090");
         }
         receiver: StartStopReceiver {
             parameters:
@@ -128,21 +127,27 @@ module EthernetInterfaceP extends InterfaceEntry like IEthernetInterface
             @display("p=165,737");
         }
         defragmentation: EthernetDefragmentation {
-            @display("p=644,1021");
+            @display("p=644,898");
         }
         preambleClassifier: PacketClassifier {
-            @display("p=565,1311");
+            @display("p=565,1188");
         }
         fcsVerification1: FragmentFcsVerification {
             parameters:
-                @display("p=644,1122");
+                @display("p=644,999");
         }
         preambleChecker1: FragmentPreambleChecker {
             parameters:
-                @display("p=644,1215");
+                @display("p=644,1092");
         }
         packetMultiplexer1: PacketMultiplexer {
-            @display("p=565,899");
+            @display("p=565,776");
+        }
+        xxx: Xxx {
+            @display("p=148,1143");
+        }
+        xxx1: Xxx {
+            @display("p=565,1290");
         }
     connections:
         typeOrLengthInsertion.out --> addressInsertion.in;
@@ -155,8 +160,6 @@ module EthernetInterfaceP extends InterfaceEntry like IEthernetInterface
         fcsInsertion1.out --> preambleInsertion1.in;
         preambleInsertion.out --> packetMultiplexer.in++;
         preambleInsertion1.out --> packetMultiplexer.in++;
-        packetMultiplexer.out --> ifg.in;
-        classifier1.out++ --> expressQueue.in;
         expressQueue.out --> priorityScheduler.in++;
         remainingQueue.out --> priorityScheduler.in++;
         upperLayerIn --> typeOrLengthInsertion.in;
@@ -164,13 +167,13 @@ module EthernetInterfaceP extends InterfaceEntry like IEthernetInterface
         priorityScheduler.out --> preemptingServer.in;
         preemptingServer.preemtedOut --> remainingQueue.in;
         classifier1.out++ --> normalQueue.in;
+        classifier1.out++ --> expressQueue.in;
         preemptingServer.out --> classifier2.in;
         addressInsertion.out --> padding.in;
         padding.out --> classifier1.in;
-        classifier2.out++ --> fcsInsertion.in;
         classifier2.out++ --> fcsInsertion1.in;
+        classifier2.out++ --> fcsInsertion.in;
         preambleChecker1.out --> fcsVerification1.in;
-        receiver.out --> preambleClassifier.in;
         fcsVerification1.out --> defragmentation.in;
         defragmentation.out --> packetMultiplexer1.in++;
         fcsVerification.out --> packetMultiplexer1.in++;
@@ -178,4 +181,8 @@ module EthernetInterfaceP extends InterfaceEntry like IEthernetInterface
         ifg.out --> transmitter.in;
         preambleClassifier.out++ --> preambleChecker.in;
         preambleClassifier.out++ --> preambleChecker1.in;
+        packetMultiplexer.out --> xxx.in;
+        xxx.out --> ifg.in;
+        receiver.out --> xxx1.in;
+        xxx1.out --> preambleClassifier.in;
 }

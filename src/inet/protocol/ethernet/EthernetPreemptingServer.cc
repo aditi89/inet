@@ -92,15 +92,16 @@ void EthernetPreemptingServer::handleCanPopPacket(cGate *gate)
             if (B(60) <= preemtedLength && preemtedLength < packet->getTotalLength() && B(120) <= packet->getTotalLength()) {
                 // confirmed part
                 const auto& remainingData = packet->removeAtBack(packet->getTotalLength() - preemtedLength);
-                auto fragmentTag = packet->getTag<FragmentTag>();
+                FragmentTag *fragmentTag = packet->getTag<FragmentTag>();
                 fragmentTag->setLastFragment(false);
+                FragmentTag *anotherfragmentTag = packet->getTag<FragmentTag>();
                 // remaining part
                 std::string name = std::string(packet->getName()) + "-frag";
                 Packet *remainingPart = new Packet(name.c_str(), remainingData);
                 remainingPart->copyTags(*packet);
-                fragmentTag = remainingPart->getTag<FragmentTag>();
-                fragmentTag->setFirstFragment(false);
-                fragmentTag->setLastFragment(true);
+                FragmentTag *remainingPartFragmentTag = remainingPart->getTag<FragmentTag>();
+                remainingPartFragmentTag->setFirstFragment(false);
+                remainingPartFragmentTag->setLastFragment(true);
                 // send parts
                 consumer->pushPacketProgress(packet, preemtedLength, packet->getTotalLength() - preemtedLength, outputGate->getPathEndGate());
                 packet = nullptr;

@@ -15,30 +15,33 @@
 // along with this program; if not, see http://www.gnu.org/licenses/.
 //
 
-#ifndef __INET_FRAGMENTFCSINSERTION_H
-#define __INET_FRAGMENTFCSINSERTION_H
+#ifndef __INET_XXX_H
+#define __INET_XXX_H
 
-#include "inet/linklayer/common/FcsMode_m.h"
 #include "inet/queueing/base/PacketFlowBase.h"
 
 namespace inet {
 
 using namespace inet::queueing;
 
-class INET_API FragmentFcsInsertion : public PacketFlowBase
+class INET_API Xxx : public PacketFlowBase
 {
-  protected:
-    uint32_t completeFcs = 0;
-
-  protected:
-    FcsMode fcsMode = FCS_MODE_UNDEFINED;
-
   protected:
     virtual void initialize(int stage) override;
     virtual void processPacket(Packet *packet) override;
+    virtual void emitPacket(Packet *packet);
+
+  public:
+    virtual void pushPacket(Packet *packet, cGate *gate = nullptr) override;
+    virtual void handlePushPacketConfirmation(Packet *packet, cGate *gate, bool successful) override;
+
+//  public:
+//    virtual void pushPacketStart(Packet *packet, cGate *gate = nullptr) override;
+//    virtual void pushPacketProgress(Packet *packet, b position, b extraProcessableLength = b(0), cGate *gate = nullptr) override;
+//    virtual void pushPacketEnd(Packet *packet, cGate *gate = nullptr) override;
 };
 
 } // namespace inet
 
-#endif // ifndef __INET_FRAGMENTFCSINSERTION_H
+#endif // ifndef __INET_XXX_H
 

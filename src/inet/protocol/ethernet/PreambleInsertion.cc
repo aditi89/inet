@@ -15,8 +15,8 @@
 // along with this program; if not, see http://www.gnu.org/licenses/.
 //
 
-#include "inet/protocol/ethernet/PreambleInsertion.h"
 #include "inet/linklayer/ethernet/EtherPhyFrame_m.h"
+#include "inet/protocol/ethernet/PreambleInsertion.h"
 
 namespace inet {
 
