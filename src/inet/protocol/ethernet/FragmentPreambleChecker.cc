@@ -51,7 +51,7 @@ bool FragmentPreambleChecker::matchesPacket(Packet *packet)
         else {
             if (header->getFragmentNumber() == 0) {
                 smdNumber = header->getSmdNumber();
-                fragmentNumber = 1;
+                fragmentNumber = 0;
                 fragmentTag->setFirstFragment(true);
                 return true;
             }

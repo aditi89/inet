@@ -51,6 +51,7 @@ void EthernetPreemptingServer::startSendingPacket()
     }
     packet->setArrival(getId(), inputGate->getId(), simTime());
     EV_INFO << "Sending packet " << packet->getName() << " started." << endl;
+    animateSend(packet, outputGate);
     consumer->pushPacketStart(packet->dup(), outputGate->getPathEndGate());
     processedTotalLength += packet->getDataLength();
     numProcessedPackets++;
@@ -90,19 +91,20 @@ void EthernetPreemptingServer::handleCanPopPacket(cGate *gate)
             b confirmedLength = consumer->getPushedPacketConfirmedLength(packet, outputGate->getPathEndGate());
             b preemtedLength = roundingLength * ((confirmedLength + roundingLength - b(1)) / roundingLength);
             if (B(60) <= preemtedLength && preemtedLength < packet->getTotalLength() && B(120) <= packet->getTotalLength()) {
+                std::string name = std::string(packet->getName()) + "-frag";
                 // confirmed part
+                packet->setName(name.c_str());
                 const auto& remainingData = packet->removeAtBack(packet->getTotalLength() - preemtedLength);
                 FragmentTag *fragmentTag = packet->getTag<FragmentTag>();
                 fragmentTag->setLastFragment(false);
-                FragmentTag *anotherfragmentTag = packet->getTag<FragmentTag>();
                 // remaining part
-                std::string name = std::string(packet->getName()) + "-frag";
                 Packet *remainingPart = new Packet(name.c_str(), remainingData);
                 remainingPart->copyTags(*packet);
                 FragmentTag *remainingPartFragmentTag = remainingPart->getTag<FragmentTag>();
                 remainingPartFragmentTag->setFirstFragment(false);
                 remainingPartFragmentTag->setLastFragment(true);
                 // send parts
+                animateSend(packet, outputGate);
                 consumer->pushPacketProgress(packet, preemtedLength, packet->getTotalLength() - preemtedLength, outputGate->getPathEndGate());
                 packet = nullptr;
                 pushOrSendPacket(remainingPart, preemtedOutputGate, preemtedConsumer);

@@ -66,14 +66,14 @@ const uint32_t crc32_tab[] = {
 uint32_t ethernetCRC(const unsigned char *buf, unsigned int bufsize, uint32_t crc)
 {
     const uint8_t *p = buf;
-    crc = (crc >> 24) | ((crc >>  8) & 0x0000FF00) | ((crc <<  8) & 0x00FF0000) | (crc << 24);
+    crc = (crc >> 24) | ((crc >> 8) & 0x0000FF00) | ((crc << 8) & 0x00FF0000) | (crc << 24);
     crc = crc ^ ~0U;
     while (bufsize--)
         crc = crc32_tab[(crc ^ *p++) & 0xFF] ^ (crc >> 8);
     crc = crc ^ ~0U;
 
     // swap byte order:
-    return (crc >> 24) | ((crc >>  8) & 0x0000FF00) | ((crc <<  8) & 0x00FF0000) | (crc << 24);
+    return (crc >> 24) | ((crc >> 8) & 0x0000FF00) | ((crc << 8) & 0x00FF0000) | (crc << 24);
 }
 
 } // namespace inet

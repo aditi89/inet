@@ -68,9 +68,9 @@ bool FragmentFcsVerification::matchesPacket(Packet *packet)
                 uint32_t computedFcs = ethernetCRC(buffer, bufferLength);
                 delete [] buffer;
                 auto receivedFcs = header->getFcs();
-                bool notLastFragment = receivedFcs == (computedFcs ^ 0xFFFF0000);
-                fragmentTag->setLastFragment(!notLastFragment);
-                return notLastFragment || receivedFcs == computedFcs;
+                bool lastFragment = receivedFcs != (computedFcs ^ 0xFFFF0000);
+                fragmentTag->setLastFragment(lastFragment);
+                return !lastFragment || receivedFcs == completeFcs;
             }
         }
         default:

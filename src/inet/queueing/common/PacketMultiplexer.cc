@@ -60,6 +60,7 @@ void PacketMultiplexer::pushPacketStart(Packet *packet, cGate *gate)
     Enter_Method("pushPacketStart");
     EV_INFO << "Forwarding pushed packet " << packet->getName() << "." << endl;
     processedTotalLength += packet->getDataLength();
+    animateSend(packet, outputGate);
     consumer->pushPacketStart(packet, outputGate->getPathEndGate());
     numProcessedPackets++;
     updateDisplayString();
@@ -70,6 +71,7 @@ void PacketMultiplexer::pushPacketProgress(Packet *packet, b position, b extraPr
     Enter_Method("pushPacketProgress");
     EV_INFO << "Forwarding pushed packet " << packet->getName() << "." << endl;
     processedTotalLength += packet->getDataLength();
+    animateSend(packet, outputGate);
     consumer->pushPacketProgress(packet, position, extraProcessableLength, outputGate->getPathEndGate());
     numProcessedPackets++;
     updateDisplayString();
@@ -80,6 +82,7 @@ void PacketMultiplexer::pushPacketEnd(Packet *packet, cGate *gate)
     Enter_Method("pushPacketEnd");
     EV_INFO << "Forwarding pushed packet " << packet->getName() << "." << endl;
     processedTotalLength += packet->getDataLength();
+    animateSend(packet, outputGate);
     consumer->pushPacketEnd(packet, outputGate->getPathEndGate());
     numProcessedPackets++;
     updateDisplayString();

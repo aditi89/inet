@@ -72,6 +72,7 @@ void PacketClassifierBase::pushPacketStart(Packet *packet, cGate *gate)
     if (index < 0 || static_cast<unsigned int>(index) >= outputGates.size())
         throw cRuntimeError("Classified packet to invalid output gate: %d", index);
     processedTotalLength += packet->getDataLength();
+    animateSend(packet, outputGates[index]);
     consumers[index]->pushPacketStart(packet, outputGates[index]->getPathEndGate());
     numProcessedPackets++;
     updateDisplayString();
@@ -86,6 +87,7 @@ void PacketClassifierBase::pushPacketProgress(Packet *packet, b position, b extr
     if (index < 0 || static_cast<unsigned int>(index) >= outputGates.size())
         throw cRuntimeError("Classified packet to invalid output gate: %d", index);
     processedTotalLength += packet->getDataLength();
+    animateSend(packet, outputGates[index]);
     consumers[index]->pushPacketProgress(packet, position, extraProcessableLength, outputGates[index]->getPathEndGate());
     numProcessedPackets++;
     updateDisplayString();
@@ -100,6 +102,7 @@ void PacketClassifierBase::pushPacketEnd(Packet *packet, cGate *gate)
     if (index < 0 || static_cast<unsigned int>(index) >= outputGates.size())
         throw cRuntimeError("Classified packet to invalid output gate: %d", index);
     processedTotalLength += packet->getDataLength();
+    animateSend(packet, outputGates[index]);
     consumers[index]->pushPacketEnd(packet, outputGates[index]->getPathEndGate());
     numProcessedPackets++;
     updateDisplayString();

@@ -74,6 +74,7 @@ void PacketFlowBase::pushPacketStart(Packet *packet, cGate *gate)
 {
     Enter_Method("pushPacketStart");
     processPacket(packet);
+    animateSend(packet, outputGate);
     consumer->pushPacketStart(packet, outputGate->getPathEndGate());
     numProcessedPackets++;
     processedTotalLength += packet->getTotalLength();
@@ -84,6 +85,7 @@ void PacketFlowBase::pushPacketProgress(Packet *packet, b position, b extraProce
 {
     Enter_Method("pushPacketProgress");
     processPacket(packet);
+    animateSend(packet, outputGate);
     consumer->pushPacketProgress(packet, position, extraProcessableLength, outputGate->getPathEndGate());
     numProcessedPackets++;
     processedTotalLength += packet->getTotalLength();
@@ -94,6 +96,7 @@ void PacketFlowBase::pushPacketEnd(Packet *packet, cGate *gate)
 {
     Enter_Method("pushPacketEnd");
     processPacket(packet);
+    animateSend(packet, outputGate);
     consumer->pushPacketEnd(packet, outputGate->getPathEndGate());
     numProcessedPackets++;
     processedTotalLength += packet->getTotalLength();

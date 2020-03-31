@@ -72,7 +72,7 @@ Packet *TcpSendQueue::createSegmentWithBytes(uint32 fromSeq, ulong numBytes)
     ASSERT(seqLE(begin, fromSeq) && seqLE(fromSeq + numBytes, end));
 
     char msgname[32];
-    sprintf(msgname, "tcpseg(l=%lu)", numBytes);
+    sprintf(msgname, "tcpseg(s=%d, l=%lu)", fromSeq, numBytes);
 
     Packet *packet = new Packet(msgname);
     const auto& payload = dataBuffer.peekAt(B(fromSeq - begin), B(numBytes));   //get data from buffer
