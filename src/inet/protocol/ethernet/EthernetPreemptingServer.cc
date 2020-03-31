@@ -90,7 +90,9 @@ void EthernetPreemptingServer::handleCanPopPacket(cGate *gate)
         if (packet != nullptr && getPriority(nextPacket) > getPriority(packet)) {
             b confirmedLength = consumer->getPushedPacketConfirmedLength(packet, outputGate->getPathEndGate());
             b preemtedLength = roundingLength * ((confirmedLength + roundingLength - b(1)) / roundingLength);
-            if (B(60) <= preemtedLength && preemtedLength < packet->getTotalLength() && B(120) <= packet->getTotalLength()) {
+            if (preemtedLength < B(60))
+                preemtedLength = B(60);
+            if (preemtedLength + B(60) <= packet->getTotalLength()) {
                 std::string name = std::string(packet->getName()) + "-frag";
                 // confirmed part
                 packet->setName(name.c_str());
