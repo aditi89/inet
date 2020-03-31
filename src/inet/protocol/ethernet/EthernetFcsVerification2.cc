@@ -36,34 +36,23 @@ void EthernetFcsVerification2::initialize(int stage)
 
 bool EthernetFcsVerification2::matchesPacket(Packet *packet)
 {
-    const auto& header = packet->peekAtBack<EthernetFcs>(B(4));
-    switch (header->getFcsMode()) {
-        case FCS_DISABLED:
-            // if the FCS mode is disabled, then the check passes if the FCS is 0
-            return header->getFcs() == 0x00000000L;
+    const auto& ethTrailer = packet->peekAtBack<EthernetFcs>(B(4));
+    switch (ethTrailer->getFcsMode()) {
         case FCS_DECLARED_CORRECT: {
             // if the FCS mode is declared to be correct, then the check passes if and only if the chunks are correct
             const auto& data = packet->peekData();
-            return header->isCorrect() && data->isCorrect();
+            return ethTrailer->isCorrect() && data->isCorrect();
         }
         case FCS_DECLARED_INCORRECT:
             // if the FCS mode is declared to be incorrect, then the check fails
             return false;
         case FCS_COMPUTED: {
-            if (header->getFcs() == 0x00000000L)
-                // if the FCS mode is computed and the FCS is 0 (disabled), then the check passes
-                return true;
-            else {
-                // otherwise compute the FCS, the check passes if the result is 0xFFFF (includes the received FCS) and the chunks are correct
-                const auto& data = packet->peekDataAsBytes();
-                auto bufferLength = B(data->getChunkLength()).get();
-                auto buffer = new uint8_t[bufferLength];
-                data->copyToBuffer(buffer, bufferLength);
-                uint32_t computedFcs = ethernetCRC(buffer, bufferLength);
-                delete [] buffer;
-                auto receivedFcs = header->getFcs();
-                return receivedFcs == computedFcs;
-            }
+            // otherwise compute the FCS, the check passes if the result is 0xFFFF (includes the received FCS) and the chunks are correct
+            const auto& data = packet->peekDataAt<BytesChunk>(B(0), packet->getDataLength() - ethTrailer->getChunkLength());
+            auto dataLength = B(data->getChunkLength()).get();
+            uint32_t computedFcs = ethernetCRC(data->getBytes().data(), dataLength);
+            auto receivedFcs = ethTrailer->getFcs();
+            return receivedFcs == computedFcs;
         }
         default:
             throw cRuntimeError("Unknown FCS mode");
