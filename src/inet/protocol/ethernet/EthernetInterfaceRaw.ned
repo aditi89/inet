@@ -28,7 +28,7 @@ import inet.protocol.transceiver.StartStopTransmitter;
 import inet.queueing.queue.PacketQueue;
 import inet.queueing.server.InstantServer;
 
-module EthernetInterface1b extends InterfaceEntry like IEthernetInterface
+module EthernetInterfaceRaw extends InterfaceEntry like IEthernetInterface
 {
     parameters:
         string interfaceTableModule;
