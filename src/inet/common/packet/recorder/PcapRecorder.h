@@ -24,6 +24,7 @@
 #include "inet/common/packet/PacketFilter.h"
 #include "inet/common/packet/recorder/PacketDump.h"
 #include "inet/common/packet/recorder/PcapWriter.h"
+#include "inet/common/packet/recorder/PcapngWriter.h"
 
 namespace inet {
 
@@ -235,7 +236,8 @@ class INET_API PcapRecorder : public cSimpleModule, protected cListener
     std::vector<const Protocol *> dumpProtocols;
     SignalList signalList;
     PacketDump packetDumper;
-    PcapWriter pcapWriter;
+//    PcapWriter pcapWriter;
+    PcapngWriter pcapWriter;
     unsigned int snaplen = 0;
     bool dumpBadFrames = false;
     PacketFilter packetFilter;

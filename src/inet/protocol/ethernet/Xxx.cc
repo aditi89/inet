@@ -15,6 +15,7 @@
 // along with this program; if not, see http://www.gnu.org/licenses/.
 //
 
+#include "inet/common/DirectionTag_m.h"
 #include "inet/common/ProtocolTag_m.h"
 #include "inet/common/Simsignals.h"
 #include "inet/protocol/ethernet/Xxx.h"
@@ -27,6 +28,7 @@ void Xxx::initialize(int stage)
 {
     PacketFlowBase::initialize(stage);
     if (stage == INITSTAGE_LOCAL) {
+        inbound = par("inbound");
     }
 }
 
@@ -66,6 +68,7 @@ void Xxx::emitPacket(Packet *packet)
 {
     auto p = new Packet(packet->getName(), packet->peekAllAsBytes());
     p->copyTags(*packet);
+    p->addTagIfAbsent<DirectionTag>()->setInbound(inbound);
     p->addTagIfAbsent<PacketProtocolTag>()->setProtocol(&Protocol::ethernetPhy);
     emit(packetSentToLowerSignal, p);
     delete p;

@@ -27,6 +27,9 @@ using namespace inet::queueing;
 class INET_API Xxx : public PacketFlowBase
 {
   protected:
+    bool inbound = false;
+
+  protected:
     virtual void initialize(int stage) override;
     virtual void processPacket(Packet *packet) override;
     virtual void emitPacket(Packet *packet);

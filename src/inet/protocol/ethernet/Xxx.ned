@@ -22,6 +22,7 @@ import inet.queueing.base.PacketFlowBase;
 simple Xxx extends PacketFlowBase
 {
     parameters:
+        bool inbound;
         @class(Xxx);
         @display("i=block/star");
         @signal[packetSentToLower](type=cPacket);
