@@ -388,6 +388,11 @@ EthernetSignal *EtherPhy::encapsulate(Packet *packet)
     packet->clearTags();
     packet->addTag<PacketProtocolTag>()->setProtocol(&Protocol::ethernetPhy);
     packet->setKind(0);
+    if (sendRawBytes) {
+        const auto& content = packet->peekAllAsBytes();
+        packet->eraseAll();
+        packet->insertAtFront(content);
+    }
     auto signal = new EthernetSignal(packet->getName());
     signal->setSrcMacFullDuplex(duplexMode);
     signal->setBitrate(bitrate);
