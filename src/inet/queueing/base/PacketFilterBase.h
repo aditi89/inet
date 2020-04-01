@@ -49,8 +49,8 @@ class INET_API PacketFilterBase : public PacketProcessorBase, public IPacketFilt
     virtual IPassivePacketSource *getProvider(cGate *gate) override { return this; }
 
     virtual bool supportsPushPacket(cGate *gate) const override { return true; }
-    virtual bool canPushSomePacket(cGate *gate) const override { return true; }
-    virtual bool canPushPacket(Packet *packet, cGate *gate) const override { return true; }
+    virtual bool canPushSomePacket(cGate *gate) const override;
+    virtual bool canPushPacket(Packet *packet, cGate *gate) const override;
     virtual void pushPacket(Packet *packet, cGate *gate) override;
 
     virtual bool supportsPopPacket(cGate *gate) const override { return true; }

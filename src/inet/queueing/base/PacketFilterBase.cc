@@ -41,6 +41,17 @@ void PacketFilterBase::initialize(int stage)
     }
 }
 
+bool PacketFilterBase::canPushSomePacket(cGate *gate) const
+{
+    return consumer->canPushSomePacket(outputGate->getPathEndGate());
+}
+
+bool PacketFilterBase::canPushPacket(Packet *packet, cGate *gate) const
+{
+    // TODO: KLUDGE:
+    return consumer->canPushPacket(packet, outputGate->getPathEndGate()) || !const_cast<PacketFilterBase *>(this)->matchesPacket(packet);
+}
+
 void PacketFilterBase::pushPacket(Packet *packet, cGate *gate)
 {
     Enter_Method("pushPacket");
