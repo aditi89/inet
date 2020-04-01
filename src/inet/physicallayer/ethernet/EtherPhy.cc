@@ -250,11 +250,11 @@ void EtherPhy::modifyTxProgress(cMessage *message)
     ASSERT(curTxStartTime + timePosition == simTime());
 
     auto oldPacket = curTx->decapsulate();
-    //FIXME when will be deleted the oldPacket?
+    delete oldPacket;
 
     curTx->encapsulate(newPacket);
     auto duration = calculateDuration(curTx);
-    sendPacketProgress(curTx, physOutGate, duration, signalFirstChangedBitPosition.get(), timePosition);
+    sendPacketProgress(curTx->dup(), physOutGate, duration, signalFirstChangedBitPosition.get(), timePosition);
 }
 
 bool EtherPhy::checkConnected()
@@ -413,7 +413,7 @@ void EtherPhy::startTx(EthernetSignalBase *signal)
     curTx = signal;
     curTxStartTime = simTime();
     auto duration = calculateDuration(curTx);
-    sendPacketStart(curTx, physOutGate, duration);
+    sendPacketStart(curTx->dup(), physOutGate, duration);
     ASSERT(txTransmissionChannel->getTransmissionFinishTime() == simTime() + duration);
     scheduleAt(simTime() + duration, endTxMsg);
     changeTxState(TX_TRANSMITTING_STATE);
@@ -439,6 +439,7 @@ void EtherPhy::abortTx()
         txTransmissionChannel->forceTransmissionFinishTime(abortTime);
         cancelEvent(endTxMsg);
         emit(txAbortedSignal, 1);   //TODO
+        delete curTx;
         curTx = nullptr;
     }
     else {
