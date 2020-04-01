@@ -50,22 +50,27 @@ void StartStopReceiver::sendToUpperLayer(Packet *packet)
 
 void StartStopReceiver::receivePacketStart(cPacket *packet)
 {
+    delete rxSignal;
     take(packet);
     rxSignal = check_and_cast<Signal *>(packet);
 }
 
 void StartStopReceiver::receivePacketProgress(cPacket *packet, int bitPosition, simtime_t timePosition, int extraProcessableBitLength, simtime_t extraProcessableDuration)
 {
+    delete rxSignal;
     take(packet);
     rxSignal = check_and_cast<Signal *>(packet);
 }
 
 void StartStopReceiver::receivePacketEnd(cPacket *cpacket)
 {
+    delete rxSignal;
     rxSignal = check_and_cast<Signal *>(cpacket);
     auto packet = check_and_cast<Packet *>(rxSignal->decapsulate());
     sendToUpperLayer(packet);
+    delete rxSignal;
     rxSignal = nullptr;
 }
 
 } // namespace inet
+
