@@ -15,6 +15,7 @@
 // along with this program; if not, see http://www.gnu.org/licenses/.
 //
 
+#include "inet/common/ProtocolTag_m.h"
 #include "inet/linklayer/ethernet/EtherPhyFrame_m.h"
 #include "inet/protocol/ethernet/PreambleInsertion.h"
 
@@ -34,6 +35,7 @@ void PreambleInsertion::processPacket(Packet *packet)
     const auto& header = makeShared<EthernetPhyHeader>();
     header->setPreambleType(SFD);
     packet->insertAtFront(header);
+    packet->addTagIfAbsent<PacketProtocolTag>()->setProtocol(&Protocol::ethernetPhy);
 }
 
 } // namespace inet
