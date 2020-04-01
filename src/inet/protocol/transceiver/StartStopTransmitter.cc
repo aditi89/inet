@@ -54,8 +54,11 @@ void StartStopTransmitter::pushPacket(Packet *packet, cGate *gate)
     ASSERT(signal == nullptr);
     txPacket = packet;
     take(txPacket);
+    auto protocolTag = txPacket->removeTagIfPresent<PacketProtocolTag>();
     txPacket->clearTags();
-    // TODO: new Signal
+    *txPacket->addTag<PacketProtocolTag>() = *protocolTag;
+    delete protocolTag;
+
     auto s = new EthernetSignal(packet->getName());
     auto datarate = bps(*dataratePar);
     s->setBitrate(datarate.get());
