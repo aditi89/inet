@@ -31,6 +31,8 @@ void InterPacketGap::initialize(int stage)
         outputGate = gate("out");
         consumer = findConnectedModule<IPassivePacketSink>(outputGate);
         durationPar = &par("duration");
+        lastPacketEndTime = -1.0; //TODO
+        // lastPacketEndTime = simTime(); //TODO
     }
 }
 
