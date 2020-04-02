@@ -110,7 +110,7 @@ b PacketFlowBase::getPushedPacketConfirmedLength(Packet *packet, cGate *gate)
 
 void PacketFlowBase::handlePushPacketConfirmation(Packet *packet, cGate *gate, bool successful)
 {
-    producer->handlePushPacketConfirmation(packet, gate, successful);
+    producer->handlePushPacketConfirmation(packet, inputGate->getPathStartGate(), successful);
 }
 
 bool PacketFlowBase::canPopSomePacket(cGate *gate) const
