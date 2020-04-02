@@ -42,6 +42,7 @@ void StartStopTransmitter::handleMessage(cMessage *message)
         sendPacketEnd(signal, outputGate, signal->getDuration());
         signal = nullptr;
         producer->handlePushPacketConfirmation(txPacket, inputGate->getPathStartGate(), true);
+        producer->handleCanPushPacket(inputGate->getPathStartGate());
     }
     else
         PassivePacketSinkBase::handleMessage(message);
