@@ -27,9 +27,9 @@ void InterPacketGap::initialize(int stage)
     PassivePacketSinkBase::initialize(stage);
     if (stage == INITSTAGE_LOCAL) {
         inputGate = gate("in");
-        producer = findConnectedModule<IActivePacketSource>(inputGate);
+        producer = getConnectedModule<IActivePacketSource>(inputGate);
         outputGate = gate("out");
-        consumer = findConnectedModule<IPassivePacketSink>(outputGate);
+        consumer = getConnectedModule<IPassivePacketSink>(outputGate);
         durationPar = &par("duration");
         lastPacketEndTime = -1.0; //TODO
         // lastPacketEndTime = simTime(); //TODO
